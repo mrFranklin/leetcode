@@ -1,0 +1,3 @@
+# leetcode
+my leetcode exercise, using multiple language: Cpp,Java,Go,Python,Javascript,Rust...
+
