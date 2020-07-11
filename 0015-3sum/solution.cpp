@@ -14,8 +14,8 @@ public:
             if (i > 0 && nums[i] == nums[i-1]) {
                 continue;
             }
-            int sum = nums[i] + nums[left] + nums[right];
             while (left < right) {
+                int sum = nums[i] + nums[left] + nums[right];
                 if (sum == 0) {
                     // find one
                     vector<int> v = vector<int>{nums[i], nums[left], nums[right]};
