@@ -1,0 +1,86 @@
+class Node {
+public:
+    Node *next;
+    int key;
+    Node(int key) {
+        this->next = NULL;
+        this->key = key;
+    }
+};
+
+class MyHashSet {
+public:
+    int size;
+    vector<Node*> vec;
+
+    /** Initialize your data structure here. */
+    MyHashSet() {
+        size = 1000;
+        vec = vector<Node*>(size);
+    }
+    
+    void add(int key) {
+        int index = key % size;
+        if (vec[index] == NULL) {
+            vec[index] = new Node(key);
+        } else {
+            if (vec[index]->key == key) {
+                return;
+            }
+            Node *p = vec[index];
+            while (p->next != NULL) {
+                if (p->next->key == key) {
+                    return;
+                }
+                p = p->next;
+            }
+            p->next = new Node(key);
+        }
+    }
+    
+    void remove(int key) {
+        int index = key % size;
+        if (vec[index] == NULL) {
+            return;
+        } 
+        if (vec[index]->key == key) {
+            vec[index] = vec[index]->next;
+            return;
+        }
+        Node *p = vec[index];
+        while (p->next != NULL) {
+            if (p->next->key == key) {
+                p->next = p->next->next;
+                return;
+            }
+            p = p->next;
+        }
+    }
+    
+    /** Returns true if this set contains the specified element */
+    bool contains(int key) {
+        int index = key % size;
+        if (vec[index] == NULL) {
+            return false;
+        } 
+        if (vec[index]->key == key) {
+            return true;
+        }
+        Node *p = vec[index];
+        while (p->next != NULL) {
+            if (p->next->key == key) {
+                return true;
+            }
+            p = p->next;
+        }
+        return false;
+    }
+};
+
+/**
+ * Your MyHashSet object will be instantiated and called as such:
+ * MyHashSet* obj = new MyHashSet();
+ * obj->add(key);
+ * obj->remove(key);
+ * bool param_3 = obj->contains(key);
+ */
