@@ -1,0 +1,90 @@
+class DLinkedNode {
+public:
+    int key;
+    int value;
+    DLinkedNode *pre;
+    DLinkedNode *next;
+    DLinkedNode(int key, int value) {
+        this->key = key;
+        this->value = value;
+        this->pre = NULL;
+        this->next = NULL;
+    }
+};
+
+class LRUCache {
+public:
+    int cap;
+    int count;
+    map<int, DLinkedNode*> cache;
+    DLinkedNode* head;
+    DLinkedNode* tail;
+
+    LRUCache(int capacity) {
+        count = 0;
+        cap = capacity;
+        tail = NULL;
+        head = new DLinkedNode(-1, -1);
+        tail = new DLinkedNode(-1, -1);
+        head->next = tail;
+        tail->pre = head;
+    }
+    
+    int get(int key) {
+        if (cache.find(key) != cache.end()) {
+            DLinkedNode *node = cache[key];
+            updateNode(node);
+            return node->value;
+        }
+        return -1;
+    }
+    
+    void put(int key, int value) {
+        if (cache.find(key) != cache.end()) {
+            DLinkedNode *node = cache[key];
+            node->value = value;
+            updateNode(node);
+        } else {
+            if (count >= cap) {
+                DLinkedNode *node = removeOldestNode();
+                cache.erase(node->key);
+                delete node;
+            } else {
+                count++;
+            }
+            DLinkedNode *newNode = new DLinkedNode(key, value);
+            cache[key] = newNode;
+            addNode(newNode);
+        }
+    }
+
+    DLinkedNode* removeOldestNode() {
+        DLinkedNode *node = head->next;
+        removeNode(node);
+        return node;
+    }
+
+    void removeNode(DLinkedNode *node) {
+        node->pre->next = node->next;
+        node->next->pre = node->pre;
+    }
+
+    void addNode(DLinkedNode *node) {
+        node->next = tail;
+        node->pre = tail->pre;
+        tail->pre->next = node;
+        tail->pre = node;
+    }
+
+    void updateNode(DLinkedNode *node) {
+        removeNode(node);
+        addNode(node);
+    }
+};
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
