@@ -1,0 +1,36 @@
+class Solution {
+public:
+    void sortColors1(vector<int>& nums) {
+        map<int, int> cache;
+        for (int i = 0; i < nums.size(); i++) {
+            cache[nums[i]]++;
+        }
+        int count = 0;
+        for (int i = 0; i < 3; i++) {
+            if (cache.count(i) <= 0) {
+                continue;
+            }
+            for (int j = 0; j < cache[i]; j++) {
+                nums[count++] = i;
+            }
+        }
+    }
+
+    void sortColors(vector<int>& nums) {
+        int index0 = 0; // 0最右
+        int index2 = nums.size() - 1; // 2最左
+        int cur = 0;
+        while (cur <= index2) {
+            if (nums[cur] == 0) {
+                swap(nums[index0], nums[cur]);
+                index0++;
+                cur++;
+            } else if (nums[cur] == 2) {
+                swap(nums[index2], nums[cur]);
+                index2--;
+            } else {
+                cur++;
+            }
+        }
+    }
+};
