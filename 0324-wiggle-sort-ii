@@ -1,0 +1,81 @@
+class Solution {
+public:
+    // 时间：O(n*logn), 空间：O(n)
+    void wiggleSort1(vector<int>& nums) {
+        sort(nums.begin(), nums.end(), greater<int>());
+
+        vector<int> va;
+        vector<int> vb;
+        for (int i = 0; i < nums.size() / 2; i++) {
+            va.push_back(nums[i]);
+        }
+        for (int i = nums.size() / 2; i < nums.size(); i++) {
+            vb.push_back(nums[i]);
+        }
+        for (int i = 0; i < nums.size(); i++) {
+            if (i % 2 == 0) {
+                nums[i] = vb[i/2];
+            } else {
+                nums[i] = va[i/2];
+            }
+        }
+    }
+    // 快速选择中位数，3-way-partition
+    void wiggleSort2(vector<int>& nums) {
+        int mid = (nums.size() - 1) / 2;
+        auto imid = nums.begin() + mid;
+        nth_element(nums.begin(), imid, nums.end());
+
+        // 3-way-partition
+        int pMin = 0, pMax = nums.size() - 1, index = 0;
+        while (index <= pMax) {
+            if (nums[index] < nums[mid]) {
+                swap(nums[index], nums[pMin]);
+                pMin++;
+                index++;
+            } else if (nums[index] == nums[mid]) {
+                index++;
+            } else {
+                swap(nums[index], nums[pMax]);
+                pMax--;
+            }
+        }
+        vector<int> va;
+        vector<int> vb;
+        for (int i = mid; i >= 0; i--) {
+            va.push_back(nums[i]);
+        }
+        for (int i = nums.size()-1; i > mid; i--) {
+            vb.push_back(nums[i]);
+        }
+        for (int i = 0; i < nums.size(); i++) {
+            if (i % 2 == 0) {
+                nums[i] = va[i/2];
+            } else {
+                nums[i] = vb[i/2];
+            }
+        }
+    }
+
+    // 快速选择中位数，3-way-partition，映射表
+    void wiggleSort(vector<int>& nums) {
+        int mid = nums.size() / 2;
+        auto imid = nums.begin() + mid;
+        nth_element(nums.begin(), imid, nums.end());
+        mid = *imid;
+        int n = nums.size();
+        // 映射
+        #define A(i) nums[(1+i*2) % (n|1)]
+        // 3-way-partition
+        int pMin = 0, pMax = nums.size() - 1, index = 0;
+        while (index <= pMax) {
+            if (A(index) > mid) {
+                swap(A(index++), A(pMin++));
+            } else if (A(index) == mid) {
+                index++;
+            } else {
+                swap(A(index), A(pMax--));
+            }
+        }
+    }
+};
