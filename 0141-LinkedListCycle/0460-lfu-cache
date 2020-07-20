@@ -1,0 +1,150 @@
+class Node {
+public:
+    int key;
+    int value;
+    Node *pre;
+    Node *next;
+    int count;
+
+    Node(int key, int value) {
+        this->key = key;
+        this->value = value;
+        this->pre = NULL;
+        this->next = NULL;
+        this->count = 1;
+    }
+};
+
+class List {
+private:
+    Node *head;
+    Node *tail;
+    int lsize;
+public:
+    List() {
+        this->head = new Node(-1, -1);
+        this->tail = new Node(-1, -1);
+        head->next = tail;
+        tail->pre = head;
+        lsize = 0;
+    }
+    void push_front(Node *node) {
+        node->pre = head;
+        node->next = head->next;
+        head->next->pre = node;
+        head->next = node;
+        ++lsize;
+    }
+    void pop_back() {
+        if (lsize == 0) {
+            return;
+        }
+        tail->pre->pre->next = tail;
+        tail->pre = tail->pre->pre;
+        --lsize;
+    }
+    Node* front() {
+        if (lsize == 0) {
+            return NULL;
+        }
+        return head->next;
+    }
+    Node* back() {
+        if (lsize == 0) {
+            return NULL;
+        }
+        return tail->pre;
+    }
+    void erase(Node *node) {
+        if (lsize == 0 || node->pre == NULL || node->next == NULL) {
+            return;
+        }
+        node->pre->next = node->next;
+        node->next->pre = node->pre;
+        --lsize;
+    }
+    int size() {
+        return lsize;
+    }
+};
+
+class LFUCache {
+public:
+    unordered_map<int, Node*> keyMap;
+    unordered_map<int, List> countMap;
+    List list;
+    int size;
+    int cap;
+    int min;
+
+    LFUCache(int capacity) {
+        size = 0;
+        cap = capacity;
+        min = 0;
+    }
+    
+    int get(int key) {
+        if (!keyMap.count(key)) {
+            return -1;
+        }
+        Node *node = keyMap[key];
+        addNodeCount(node);
+        return node->value;
+    }
+    
+    void put(int key, int value) {
+        if (cap <= 0) {
+            return;
+        }
+        if (keyMap.count(key)) { // 已存在，更新
+            Node *node = keyMap[key];
+            node->value = value;
+            addNodeCount(node);
+        } else { // 不存在，插入
+            if (size >= cap) { // 达到上限，先删除一个
+                Node *node = countMap[min].back();
+                countMap[min].pop_back();
+                if (countMap[min].size() == 0) {
+                    countMap.erase(min);
+                    // 此处不需要更新min的值，因为下面会设置成1
+                }
+                keyMap.erase(node->key);
+                delete node;
+            } else {
+                size++;
+            }
+            min = 1; // 第一次插入
+            Node *node = new Node(key, value);            
+            if (!countMap.count(min)) {
+                countMap[min] = List();
+            }
+            countMap[min].push_front(node);
+            keyMap[node->key] = node;
+        }
+    }
+
+    void addNodeCount(Node *node) {
+        int count = node->count;
+        node->count++;
+        if (countMap.count(count)) {
+            countMap[count].erase(node);
+            if (countMap[count].size() == 0) {
+                countMap.erase(count);
+                if (min == count) {
+                    min++;
+                }
+            }
+        }
+        if (!countMap.count(count+1)) {
+            countMap[count+1] = List();
+        }
+        countMap[count+1].push_front(node);
+    }
+};
+
+/**
+ * Your LFUCache object will be instantiated and called as such:
+ * LFUCache* obj = new LFUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
