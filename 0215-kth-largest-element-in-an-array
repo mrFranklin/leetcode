@@ -1,0 +1,73 @@
+class Solution {
+public:
+    int partiton(vector<int>& nums, int start, int end) {
+        // 随机选择pivot
+        int r = rand() % (end - start + 1) + start;
+        swap(nums[r], nums[end]);
+
+        int pivot = nums[end];
+        int i = start, j = start;
+        while (j < end) {
+            if (nums[j] < pivot) {
+                swap(nums[i++], nums[j++]);
+            } else {
+                j++;
+            }
+        }
+        swap(nums[i], nums[end]);
+        return i;
+    }
+
+    int quickSelect(vector<int>& nums, int k, int start, int end) {
+        if (start == end) {
+            return nums[start];
+        }
+        int pivot = partiton(nums, start, end);
+        int n = nums.size();
+        if (pivot == n - k) {
+            return nums[pivot];
+        } else if (pivot < n - k) {
+            return quickSelect(nums, k, pivot+1, end);
+        } else {
+            return quickSelect(nums, k, start, pivot-1);
+        }
+    }
+
+    // 快速选择法
+    int findKthLargest2(vector<int>& nums, int k) {
+        srand(time(0));
+        if (k <= 0 || nums.size() <= 0) {
+            return -1;
+        }
+        int start = 0;
+        int end = nums.size() - 1;
+        k = nums.size() - k;
+        while (start <= end) {
+            int pivot = partiton(nums, start, end);
+            if (pivot == k) {
+                return nums[pivot];
+            } else if (pivot < k) {
+                start = pivot + 1;
+            } else {
+                end = pivot - 1;
+            }
+        }
+        return nums[start];
+    }
+
+    // 小顶堆
+    int findKthLargest(vector<int>& nums, int k) {
+        priority_queue<int, vector<int>, greater<int> > pq;
+        
+        for (int i = 0; i < nums.size(); i++) {
+            if (pq.size() < k) {
+                pq.push(nums[i]);
+            } else if (pq.top() < nums[i]) {
+                pq.pop();
+                pq.push(nums[i]);
+            }
+        }
+        return pq.top();
+    }
+
+};
