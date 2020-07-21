@@ -1,0 +1,82 @@
+class Solution {
+public:
+    bool isValidSudoku1(vector<vector<char>>& board) {
+        if (board.size() != 9 || board[0].size() != 9) {
+            return false;
+        }
+        unordered_map<char, int> rowMap[9];
+        unordered_map<char, int> colMap[9];
+        unordered_map<char, int> thirdMap[9];
+        
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                char num = board[i][j];
+                if (num == '.') {
+                    continue;
+                }
+                // 验证行
+                if (rowMap[i].count(num)) {
+                    return false;
+                } else {
+                    rowMap[i][num] = 1;
+                }
+                // 验证列
+                if (colMap[j].count(num)) {
+                    return false;
+                } else {
+                    colMap[j][num] = 1;
+                }
+                // 验证3*3
+                int index = (i / 3) * 3 + j / 3;
+                if (thirdMap[index].count(num)) {
+                    return false;
+                } else {
+                    thirdMap[index][num] = 1;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    // 数组代替hashmap，提高性能
+    bool isValidSudoku(vector<vector<char>>& board) {
+        if (board.size() != 9 || board[0].size() != 9) {
+            return false;
+        }
+        int rowMap[9][9] = {0};
+        int colMap[9][9] = {0};
+        int thirdMap[9][9] = {0};
+        
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                char ch = board[i][j];
+                if (ch == '.') {
+                    continue;
+                }
+                int num = ch - '1';
+                // 验证行
+                if (rowMap[i][num] == 1) {
+                    return false;
+                } else {
+                    rowMap[i][num] = 1;
+                }
+                // 验证列
+                if (colMap[j][num] == 1) {
+                    return false;
+                } else {
+                    colMap[j][num] = 1;
+                }
+                // 验证3*3
+                int index = (i / 3) * 3 + j / 3;
+                if (thirdMap[index][num] == 1) {
+                    return false;
+                } else {
+                    thirdMap[index][num] = 1;
+                }
+            }
+        }
+
+        return true;
+    }
+};
