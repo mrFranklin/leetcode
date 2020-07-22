@@ -1,0 +1,173 @@
+class Area {
+public:
+    struct Point {
+        int x;
+        int y;
+        Point(int x, int y) {
+            this->x = x;
+            this->y = y;
+        }
+    };
+    static void dfs(int x, int y, vector<vector<char>>& grid, vector<vector<bool>>& visited) {
+        if (!isInArea(x, y, grid) || visited[x][y] || grid[x][y] == '0') {
+            return;
+        }
+        visited[x][y] = true;
+        dfs(x, y-1, grid, visited);
+        dfs(x, y+1, grid, visited);
+        dfs(x-1, y, grid, visited);
+        dfs(x+1, y, grid, visited);
+    }
+
+    static void bfs(int x, int y, vector<vector<char>>& grid, vector<vector<bool>>& visited) {
+        queue<Point> q;
+        q.push(Point(x, y));
+        while (!q.empty()) {
+            Point point = q.front();
+            q.pop();
+            if (visited[point.x][point.y]) {
+                continue;
+            }
+            visited[point.x][point.y] = true;
+            if (Area::isInArea(point.x, point.y-1, grid) && grid[point.x][point.y-1] == '1') {
+                q.push(Point(point.x, point.y-1));
+            }
+            if (Area::isInArea(point.x, point.y+1, grid) && grid[point.x][point.y+1] == '1') {
+                q.push(Point(point.x, point.y+1));
+            }
+            if (Area::isInArea(point.x-1, point.y, grid) && grid[point.x-1][point.y] == '1') {
+                q.push(Point(point.x-1, point.y));
+            }
+            if (Area::isInArea(point.x+1, point.y, grid) && grid[point.x+1][point.y] == '1') {
+                q.push(Point(point.x+1, point.y));
+            }
+        }    
+    }
+
+    static bool isInArea(int x, int y, vector<vector<char>>& grid) {
+        return (x >= 0) && (x < grid.size()) && (y >= 0) && (y < grid[0].size());
+    }
+};
+
+class UnionFind {
+public:
+    vector<int> parent;
+    vector<int> rank;
+    int count;
+
+    UnionFind(vector<vector<char>>& grid) {
+        count = 0;
+        int row = grid.size();
+        int col = grid[0].size();
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (grid[i][j] == '1') {
+                    parent.push_back(i * col + j);
+                    ++count;
+                } else {
+                    parent.push_back(-1);
+                }
+                rank.push_back(0);
+            }
+        }
+    }
+
+    int find(int x) {
+        if (x == parent[x]) {
+            return x;
+        } else {
+            parent[x] = find(parent[x]);
+            return parent[x];
+        }
+    }
+    
+    bool unite(int x, int y) {
+        x = find(x);
+        y = find(y);
+        if (x == y) {
+            return false;
+        }
+        if (rank[x] < rank[y]) {
+            parent[x] = y;
+        } else {
+            parent[y] = x;
+            if (rank[x] == rank[y]) {
+                rank[x]++;
+            }
+        }
+        --count;
+        return true;
+    }
+
+    int getCount() {
+        return count;
+    }
+};
+
+class Solution {
+public:
+    // bfs, dfs
+    int numIslands(vector<vector<char>>& grid) {
+        if (grid.size() == 0 || grid[0].size() == 0) {
+            return 0;
+        }
+        int count = 0;
+        int row = grid.size();
+        int col = grid[0].size();
+        vector<vector<bool>> visited(row);
+        for (int i = 0; i < visited.size(); i++) {
+            vector<bool> v(col);
+            visited[i] = v;
+        }
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (visited[i][j] || grid[i][j] == '0') {
+                    continue;
+                }
+                count++;
+                // bfs
+                // Area::bfs(i, j, grid, visited);
+                // dfs
+                Area::dfs(i, j, grid, visited);
+            }
+        }
+        return count;
+    }
+    
+    // union find
+    int numIslands1(vector<vector<char>>& grid) {
+        if (grid.size() == 0 || grid[0].size() == 0) {
+            return 0;
+        }
+        UnionFind uf(grid);
+        int count = 0;
+        int row = grid.size();
+        int col = grid[0].size();
+        vector<vector<bool>> visited(row);
+        for (int i = 0; i < visited.size(); i++) {
+            vector<bool> v(col);
+            visited[i] = v;
+        }
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (visited[i][j] || grid[i][j] == '0') {
+                    continue;
+                }
+                visited[i][j] = true;
+                if (Area::isInArea(i, j-1, grid) && grid[i][j-1] == '1') {
+                    uf.unite(i*col+j, i*col+j-1);
+                }
+                if (Area::isInArea(i, j+1, grid) && grid[i][j+1] == '1') {
+                    uf.unite(i*col+j, i*col+j+1);
+                }
+                if (Area::isInArea(i-1, j, grid) && grid[i-1][j] == '1') {
+                    uf.unite(i*col+j, (i-1)*col+j);
+                }
+                if (Area::isInArea(i+1, j, grid) && grid[i+1][j] == '1') {
+                    uf.unite(i*col+j, (i+1)*col+j);
+                }
+            }
+        }
+        return uf.getCount();
+    }
+};

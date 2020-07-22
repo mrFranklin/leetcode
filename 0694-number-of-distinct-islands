@@ -1,0 +1,57 @@
+class Area {
+public:
+    struct Point {
+        int row;
+        int col;
+        Point(int row, int col) {
+            this->row = row;
+            this->col = col;
+        }
+    };
+    static void dfs(int x, int y, vector<vector<int>>& grid, vector<vector<bool>>& visited, vector<int> &graph) {
+        if (!isInArea(x, y, grid) || visited[x][y] || grid[x][y] == 0) {
+            return;
+        }
+        visited[x][y] = true;
+        graph.push_back(x * grid[0].size() + y);
+        dfs(x, y-1, grid, visited, graph);
+        dfs(x, y+1, grid, visited, graph);
+        dfs(x-1, y, grid, visited, graph);
+        dfs(x+1, y, grid, visited, graph);
+    }
+    static bool isInArea(int x, int y, vector<vector<int>>& grid) {
+        return (x >= 0) && (x < grid.size()) && (y >= 0) && (y < grid[0].size());
+    }
+};
+
+class Solution {
+public:
+    int numDistinctIslands(vector<vector<int>>& grid) {
+        if (grid.size() == 0 || grid[0].size() == 0) {
+            return 0;
+        }
+        int row = grid.size();
+        int col = grid[0].size();
+        vector<vector<bool>> visited(row);
+        for (int i = 0; i < visited.size(); i++) {
+            vector<bool> v(col);
+            visited[i] = v;
+        }
+        set<vector<int>> sets;
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (visited[i][j] || grid[i][j] == 0) {
+                    continue;
+                }
+                vector<int> graph;
+                Area::dfs(i, j, grid, visited, graph);
+                for (int k = 0; k < graph.size(); k++) {
+                    graph[k] -= i * col + j;
+                }
+                sets.insert(graph);
+            }
+        }
+        
+        return sets.size();
+    }
+};
