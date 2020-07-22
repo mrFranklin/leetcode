@@ -1,0 +1,54 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int count;
+    int maxCount;
+    TreeNode *last;
+    void travel(TreeNode* root, vector<int> &vec) {
+        if (root == NULL) {
+            return;
+        }
+        travel(root->left, vec);
+        if (last && root->val != last->val) {
+            if (maxCount == count) {
+                vec.push_back(last->val);
+            } else if (maxCount < count) {
+                vec.clear();
+                vec.push_back(last->val);
+                maxCount = count;
+            }
+            count = 1;
+        } else {
+            ++count;
+        }
+        last = root;
+        travel(root->right, vec);
+    }
+    // 中序遍历，bfs是从小到大排列
+    vector<int> findMode(TreeNode* root) {
+        vector<int> vec;
+        if (!root) return vec;
+        
+        last = NULL;
+        count = 0;
+        maxCount = 0;
+        travel(root, vec);
+        // 判断最后一个
+        if (maxCount == count) {
+            vec.push_back(last->val);
+        } else if (maxCount < count) {
+            vec.clear();
+            vec.push_back(last->val);
+        }
+            
+        return vec;
+    }
+};
