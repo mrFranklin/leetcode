@@ -1,0 +1,88 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    // 解法1：快慢指针，时间复杂度稍高
+    TreeNode* travel(ListNode* head) {
+        if (head == NULL) return NULL;
+        if (head->next == NULL) {
+            TreeNode *node = new TreeNode(head->val);
+            return node;
+        }
+        ListNode *slow = head;
+        ListNode *fast = head;
+        ListNode *pre;
+        while (fast && fast->next) {
+            pre = slow;
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        pre->next = NULL;
+        TreeNode *node = new TreeNode(slow->val);
+        node->left = travel(head);
+        node->right = travel(slow->next);
+        return node;
+    }
+    TreeNode* sortedListToBST1(ListNode* head) {
+        return travel(head);
+    }
+
+    TreeNode* travelVec(vector<ListNode*> &vec, int start, int end) {
+        if (start > end) return NULL;
+        int mid = start + (end - start) / 2;
+        TreeNode* node = new TreeNode(vec[mid]->val);
+        if (start == end) return node;
+        node->left = travelVec(vec, start, mid-1);
+        node->right = travelVec(vec, mid+1, end);
+        return node;
+    }
+    // 解法2：转换成数组，最简单，空间复杂度稍多点
+    TreeNode* sortedListToBST2(ListNode* head) {
+        vector<ListNode*> vec;
+        ListNode *p = head;
+        while (p) {
+            vec.push_back(p);
+            p = p->next;
+        }
+        return travelVec(vec, 0, vec.size()-1);
+    }
+
+    ListNode *head;
+    TreeNode *inOrder(int start, int end) {
+        if (start > end) return NULL;
+        
+        int mid = start + (end - start) / 2;
+        TreeNode *left = inOrder(start, mid-1);
+        TreeNode *node = new TreeNode(head->val);
+        node->left = left;
+        head = head->next;
+        node->right = inOrder(mid+1, end);
+        return node;
+    }
+    // 解法3：模拟中序遍历
+    TreeNode* sortedListToBST(ListNode* head) {
+        this->head = head;
+        ListNode* p = head;
+        int size = 0;
+        while (p) {
+            p = p->next;
+            ++size;
+        }
+        return inOrder(0, size - 1);
+    }
+};
