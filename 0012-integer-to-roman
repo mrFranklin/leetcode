@@ -1,0 +1,13 @@
+class Solution {
+public:
+    string intToRoman(int num) {
+        if (num <= 0 || num >= 4000) return "";
+
+        string dictOne[10] = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
+        string dictTwo[10] = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
+        string dictThree[10] = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
+        string dictFour[4] = {"", "M", "MM", "MMM"};
+
+        return "" + dictFour[num / 1000] + dictThree[num % 1000 / 100] + dictTwo[num % 100 / 10] + dictOne[num % 10];
+    }
+};
