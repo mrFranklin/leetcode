@@ -1,0 +1,68 @@
+class Solution {
+public:
+
+    bool dfs(int v, vector<int> adj[], int visited[], vector<int> &ans) {
+        if (visited[v] == 1) return false; // 有环
+        if (visited[v] == 2) return true; // 已访问过
+
+        visited[v] = 1;
+        for (int i = 0; i < adj[v].size(); i++) {
+            if (!dfs(adj[v][i], adj, visited, ans)) return false;
+        }
+        visited[v] = 2;
+        ans.push_back(v);
+
+        return true;
+    }
+
+    // dfs
+    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+        int visited[numCourses]; // 1 当前正在访问，2 已遍历完
+        memset(visited, 0, sizeof(visited));
+        vector<int> adj[numCourses];
+        vector<int> ans;
+        for (int i = 0; i < prerequisites.size(); i++) {
+            vector<int> p = prerequisites[i];
+            adj[p[1]].push_back(p[0]);
+        }
+        for (int i = 0; i < numCourses; i++) {
+            if (!dfs(i, adj, visited, ans)) return vector<int>();
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;
+    }
+
+    // bft / kahn
+    vector<int> findOrder2(int numCourses, vector<vector<int>>& prerequisites) {
+        int indegree[numCourses];
+        memset(indegree, 0, sizeof(indegree));
+        vector<int> adj[numCourses];
+        vector<int> ans;
+        for (int i = 0; i < prerequisites.size(); i++) {
+            vector<int> p = prerequisites[i];
+            adj[p[1]].push_back(p[0]);
+            indegree[p[0]]++;
+        }
+        queue<int> q;
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) {
+                q.push(i);
+            }
+        }
+        while (!q.empty()) {
+            int v = q.front();
+            q.pop();
+            ans.push_back(v);
+            for (int i = 0; i < adj[v].size(); i++) {
+                if (--indegree[adj[v][i]] == 0) {
+                    q.push(adj[v][i]);
+                }
+            }
+        }
+
+        if (ans.size() == numCourses) {
+            return ans;
+        }
+        return vector<int>();
+    }
+};
