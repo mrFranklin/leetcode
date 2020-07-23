@@ -1,0 +1,112 @@
+class Solution {
+public:
+    vector<string> ssplit(string &s, char delim) {
+        vector<string> vec;
+        istringstream iss(s);
+        string item;
+        while (getline(iss, item, delim)) {
+            vec.push_back(item);
+        }
+        return vec;
+    }
+    bool isRunYear(int year) {
+        return year%4 == 0 && year%100 != 0 || year%400 == 0;
+    }
+    
+    // 代码写的不好
+    int daysBetweenDates2(string date1, string date2) {
+        vector<string> vec1 = ssplit(date1, '-');
+        if (vec1.size() != 3) {
+            return 0;
+        }
+        vector<string> vec2 = ssplit(date2, '-');
+        if (vec2.size() != 3) {
+            return 0;
+        }
+
+        int year1 = stoi(vec1[0]);
+        int month1 = stoi(vec1[1]);
+        int day1 = stoi(vec1[2]);
+        int year2 = stoi(vec2[0]);
+        int month2 = stoi(vec2[1]);
+        int day2 = stoi(vec2[2]);
+        if (year1 > year2) {
+            swap(year1, year2);
+            swap(month1, month2);
+            swap(day1, day2);
+        }
+        bool isRunYear1 = isRunYear(year1);
+        bool isRunYear2 = isRunYear(year2);
+        int monthSum1 = 0;
+        int monthSum2 = 0;
+        for (int i = 1; i < month1; i++) {
+            if (i == 2) {
+                monthSum1 += (isRunYear1 ? 29 : 28);
+            } else if (i == 1 || i == 3|| i == 5 || i == 7 || i == 8 || i == 10 || i == 12) {
+                monthSum1 += 31;
+            } else {
+                monthSum1 += 30;
+            }
+        }
+        for (int i = 1; i < month2; i++) {
+            if (i == 2) {
+                monthSum2 += (isRunYear2 ? 29 : 28);
+            } else if (i == 1 || i == 3|| i == 5 || i == 7 || i == 8 || i == 10 || i == 12) {
+                monthSum2 += 31;
+            } else {
+                monthSum2 += 30;
+            }
+        }
+
+        int yearSum = (year2 - year1) * 365;
+        for (int i = year1; i < year2; i++) {
+            yearSum += isRunYear(i) ? 1 : 0;
+        }
+        
+        int ans = yearSum + (monthSum2 - monthSum1) + (day2 - day1);
+        return abs(ans);
+    }
+
+    const int monthNum[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int getDateNum(int year, int month, int day, int fromYear) {
+        int sum = 0;
+        for (int i = fromYear; i < year; i++) {
+            sum += isRunYear(i) ? 366 : 365;
+        }
+        for (int i = 1; i < month; i++) {
+            sum += monthNum[i-1];
+        }
+        if (isRunYear(year) && month > 2) {
+            sum += 1;
+        }
+        return sum + day;
+    }
+
+    // 精简代码
+    int daysBetweenDates(string date1, string date2) {
+        vector<string> vec1 = ssplit(date1, '-');
+        if (vec1.size() != 3) {
+            return 0;
+        }
+        vector<string> vec2 = ssplit(date2, '-');
+        if (vec2.size() != 3) {
+            return 0;
+        }
+
+        int year1 = stoi(vec1[0]);
+        int month1 = stoi(vec1[1]);
+        int day1 = stoi(vec1[2]);
+        int year2 = stoi(vec2[0]);
+        int month2 = stoi(vec2[1]);
+        int day2 = stoi(vec2[2]);
+        
+        int ret;
+        if (year1 <= year2) {
+            ret = getDateNum(year2, month2, day2, year1) - getDateNum(year1, month1, day1, year1);
+        } else {
+            ret = getDateNum(year1, month1, day1, year2) - getDateNum(year2, month2, day2, year2);
+        }
+        
+        return abs(ret);
+    }
+};
