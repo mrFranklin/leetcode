@@ -1,0 +1,50 @@
+class Solution {
+public:
+    string numberToWords(int num) {
+        if (num == 0) {
+            return "Zero";
+        }
+
+        // 个位数
+        string dict1[10] = {"Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"}; 
+        // 10 - 19
+        string dict2[10] = {"Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
+        // 20, 30...
+        string dict3[10] = {"", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
+        // string hundred = "Hundred";
+        string dict4[4] = {"", "Thousand", "Million", "Billion"};
+
+        int count = 0;
+        vector<string> vec;
+        while (num > 0) {
+            string s = "";
+            int n = num % 1000;
+            int hand = n / 100;
+            if (hand > 0) {
+                s += dict1[hand] + " Hundred ";
+            }
+            int tenNum = n % 100 / 10;
+            if (tenNum > 1) {
+                s += dict3[tenNum] + " ";
+            }
+            int lastNum = n % 10;
+            if (tenNum == 1) {
+                s += dict2[lastNum] + " ";
+            } else if (lastNum > 0) { // 注意zero不打印
+                s += dict1[lastNum] + " ";
+            }
+            if (count > 0 && n != 0) { // 注意此处n的判断！
+                s += dict4[count] + " ";
+            }
+            num /= 1000;
+            count++;
+            vec.push_back(s);
+        }
+        string s = "";
+        for (int i = vec.size() - 1; i >= 0; i--) {
+            s += vec[i];
+        }
+        s.erase(s.find_last_not_of(" ")+1);
+        return s;
+    }
+};
