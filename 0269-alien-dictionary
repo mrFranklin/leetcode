@@ -1,0 +1,62 @@
+class Solution {
+public:
+    string alienOrder(vector<string>& words) {
+        int indegree[26];
+        memset(indegree, -1, sizeof(indegree));
+        set<int> adj[26];
+        for (int i = 0; i < words.size()-1; i++) {
+            int j;
+            for (j = 0; j < words[i].size(); j++) {
+                if (j < words[i+1].size() && words[i][j] != words[i+1][j]) {
+                    adj[words[i][j]-'a'].insert(words[i+1][j]-'a');
+                    break;
+                }
+            }
+            // 注意此处，当前面字符完全相同时只剩下最后一个字符时，不允许前一个字符串比后一个长 比如 ["abc","ab"]
+            if (j == words[i].size() && words[i].size() > words[i+1].size()) {
+                return "";
+            }
+        }
+        for (int i = 0; i < words.size(); i++) {
+            for (int j = 0; j < words[i].size(); j++) {
+                indegree[words[i][j]-'a'] = 0;
+            }
+        }
+        for (int i = 0; i < 26; i++) {
+            if (adj[i].size() == 0) continue;
+            for (auto val : adj[i]) {                
+                ++indegree[val];
+            }
+        }
+
+        queue<int> q;
+        int count = 0;
+        for (int i = 0; i < sizeof(indegree)/sizeof(int); i++) {
+            if (indegree[i] == 0) {
+                q.push(i);
+            }
+            if (indegree[i] >= 0) {
+                ++count;
+            }
+        }
+        vector<int> vec;
+        while (!q.empty()) {
+            int v = q.front();
+            q.pop();
+            vec.push_back(v);
+            for (auto ele : adj[v]) {
+                if (--indegree[ele] == 0) {
+                    q.push(ele);
+                }
+            }
+        }
+        if (vec.size() != count) {
+            return "";
+        }
+        string s = "";
+        for (auto v : vec) {
+            s += 'a' + v;
+        }
+        return s;
+    }
+};
