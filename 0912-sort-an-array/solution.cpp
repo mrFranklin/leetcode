@@ -1,5 +1,6 @@
 class Solution {
 public:
+    // 冒泡排序
     vector<int> bubbleSort1(vector<int>& nums) {
         for (int i = nums.size() - 1; i > 0; i--) {
             for (int j = 0; j < i; j++) {
@@ -21,6 +22,7 @@ public:
         return nums;
     }
 
+    // 插入排序
     vector<int> insertSort(vector<int>& nums) {
         for (int i = 1; i < nums.size(); i++) {
             int num = nums[i];
@@ -36,7 +38,7 @@ public:
         }
         return nums;
     }
-
+    // 选择排序
     vector<int> selectSort(vector<int>& nums) {
         for (int i = 0; i < nums.size() - 1; i++) {
             int min = i;
@@ -50,6 +52,7 @@ public:
         return nums;
     }
 
+    // 快速排序
     int partition(vector<int>& nums, int start, int end) {
         int index = start;
         int pivot = end;
@@ -77,6 +80,7 @@ public:
         return nums;
     }
 
+    // 归并排序
     void merge(vector<int>& nums, int start, int mid, int end) {
         vector<int> ret;
         int i = start, j = mid+1;
@@ -114,12 +118,74 @@ public:
         msort(nums, 0, nums.size()-1);
         return nums;
     }
+    // 堆排序
+    // 
+    vector<int> buildHeapSlow(vector<int>& nums) {
+        vector<int> ans;
+        for (int i = 0; i < nums.size(); i++) {
+            insertHeap(ans, nums[i]);
+        }
+        return ans;
+    }
+    void insertHeap(vector<int>& nums, int val) {
+        nums.push_back(val);
+        int n = nums.size() - 1;
+        while (n > 0) {
+            if (nums[n] > nums[(n-1)/2]) {
+                swap(nums[n], nums[(n-1)/2]);
+            } else {
+                break;
+            }
+            n = (n-1)/2;
+        }
+    }
+
+    vector<int> buildHeap(vector<int>& nums) {
+        int i = (nums.size() - 1) / 2;
+        while (i >= 0) {
+            heapify(nums, nums.size(), i);
+            --i;
+        }
+        return nums;
+    }
+    void heapify(vector<int>& nums, int n, int index) {
+        int max;
+        while (index < n) {
+            max = index;
+            if (index*2+1 < n && nums[index*2+1] > nums[index]) {
+                max = index*2+1;
+            }
+            if (index*2+2 < n && nums[index*2+2] > nums[max]) {
+                max = index*2+2;
+            }
+            if (max != index) {
+                swap(nums[index], nums[max]);
+            } else {
+                break;
+            }
+            index = max;
+        }
+    }
+    vector<int> heapSort(vector<int>& nums) {
+        if (nums.size() == 0) return nums;
+        
+        // vector<int> vec = buildHeap(nums);
+        vector<int> vec = buildHeapSlow(nums);
+        int n = vec.size()-1;
+        while (n > 0) {
+            swap(vec[0], vec[n]);
+            heapify(vec, n, 0);
+            --n;
+        }
+        return vec;
+    }
 
     vector<int> sortArray(vector<int>& nums) {
         // return bubbleSort(nums);
         // return insertSort(nums);
         // return selectSort(nums);
-        return quickSort(nums);
+        // return quickSort(nums);
         // return mergeSort(nums);
+        return heapSort(nums);
     }
 };
