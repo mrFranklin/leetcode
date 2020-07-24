@@ -1,0 +1,20 @@
+class Solution {
+public:
+    string countAndSay(int n) {
+        if (n == 1) return "1";
+        string s = countAndSay(n - 1);
+        int left = 0, right = 0;
+        string ans = "";
+        while (right < s.size()) {
+            if (s[left] != s[right]) {
+                int d = s[left] - '0';
+                ans += to_string(right - left) + to_string(d);
+                left = right;
+            }
+            right++;
+        }
+        int d = s[left] - '0';
+        ans += to_string(right - left) + to_string(d);
+        return ans;
+    }
+};
