@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int lengthOfLongestSubstring1(string s) {
+        unordered_map<char, int> cache;
+        int max = 0;
+        int start = 0;
+        int count = 0;
+        for (int i = 0; i < s.size(); i++) {
+            if (cache.count(s[i]) && cache[s[i]] >= start) {
+                start = cache[s[i]] + 1;
+            }
+            cache[s[i]] = i;
+            count = i - start + 1;
+            if (max < count) {
+                max = count;
+            }
+        }
+        return max;
+    }
+
+    int lengthOfLongestSubstring(string s) {
+        unordered_map<char, int> window;
+        int left = 0, right = 0;
+        int len = 0;
+        while (right < s.size()) {
+            char c = s[right];
+            if (window.count(c) && window[c] >= left) {
+                left = window[c] + 1;
+            }
+            window[c] = right;
+            right++;
+            if (right - left > len) {
+                len = right - left;
+            }
+        }
+        return len;
+    }
+};
