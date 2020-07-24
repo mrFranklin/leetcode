@@ -1,0 +1,71 @@
+class Solution {
+public:
+    int subarraysWithKDistinct1(vector<int>& A, int K) {
+        if (A.size() == 0 || K <= 0) {
+            return 0;
+        }
+        unordered_map<int, int> window;
+        int left = 0, right = 0;
+        int len = 0;
+        while (right < A.size()) {
+            window[A[right++]]++;
+            while (window.size() > K) {
+                int c = A[left++];
+                window[c]--;
+                if (window[c] == 0) {
+                    window.erase(c);
+                }
+            }
+            int tmp = left;
+            while (window.size() == K) {
+                len++;
+                int d = A[tmp++];
+                window[d]--;
+                if (window[d] == 0) {
+                    window.erase(d);
+                }
+            }
+            while (tmp > left) {
+                window[A[tmp-1]]++;
+                tmp--;
+            }
+        }
+        
+        return len;
+    }
+
+    int subarraysWithKDistinct(vector<int>& A, int K) {
+        if (A.size() == 0 || K <= 0) {
+            return 0;
+        }
+        unordered_map<int, int> window;
+        int left = 0, right = 0;
+        int len = 0;
+        while (right < A.size()) {
+            window[A[right++]]++;
+
+            while (window.size() > K) {
+                int c = A[left++];
+                window[c]--;
+                if (window[c] == 0) {
+                    window.erase(c);
+                }
+            }
+            int tmp = left;
+            while (window.size() == K) {
+                len++;
+                int d = A[tmp++];
+                window[d]--;
+                if (window[d] == 0) {
+                    window.erase(d);
+                }
+            }
+            while (tmp > left) {
+                window[A[tmp-1]]++;
+                tmp--;
+            }
+        }
+        
+        return len;
+    }
+};
