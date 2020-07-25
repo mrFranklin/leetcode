@@ -1,0 +1,69 @@
+class TrieNode {
+public:
+    char data;
+    TrieNode* next[26];
+    bool isLast;
+    TrieNode(char data) {
+        this->data = data;
+        memset(this->next, 0, sizeof(this->next));
+        this->isLast = false;
+    }
+};
+
+class WordDictionary {
+private:
+    TrieNode *root;
+public:
+
+    /** Initialize your data structure here. */
+    WordDictionary() {
+        this->root = new TrieNode(0);
+    }
+    
+    /** Adds a word into the data structure. */
+    void addWord(string word) {
+        TrieNode *p = root;
+        for (int i = 0; i < word.size(); i++) {
+            int ch = word[i] - 'a';
+            if (p->next[ch] == NULL) {
+                p->next[ch] = new TrieNode(word[i]);
+            }
+            p = p->next[ch];
+        }
+        p->isLast = true;
+    }
+    
+    // dfs 注意c++中的引用符不要忘了！性能相差1倍！272ms -> 132ms
+    bool dfs(string &word, TrieNode *root, int i) {
+        if (root == NULL) return false;
+        if (i >= word.size()) return root->isLast;
+
+        if (word[i] == '.') {
+            for (int j = 0; j < 26; j++) {
+                if (root->next[j] == NULL) continue;
+                if (dfs(word, root->next[j], i+1)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            if (root->next[word[i]-'a'] == NULL) {
+                return false;
+            } else {
+                return dfs(word, root->next[word[i]-'a'], i+1);
+            }
+        }
+    }
+
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    bool search(string word) {
+        return dfs(word, root, 0);
+    }
+};
+
+/**
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary* obj = new WordDictionary();
+ * obj->addWord(word);
+ * bool param_2 = obj->search(word);
+ */
