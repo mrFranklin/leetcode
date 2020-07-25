@@ -1,0 +1,77 @@
+class TrieNode {
+public:
+    TrieNode* next[26];
+    bool isLast;
+    TrieNode() {
+        this->isLast = false;
+        memset(this->next, 0, sizeof(this->next));
+    }
+};
+
+class MagicDictionary {
+private:
+    TrieNode *root;
+public:
+    /** Initialize your data structure here. */
+    MagicDictionary() {
+        root = new TrieNode();
+    }
+    
+    /** Build a dictionary through a list of words */
+    void buildDict(vector<string> dict) {
+        for (int i = 0; i < dict.size(); i++) {
+            TrieNode *p = root;
+            for (int j = 0; j < dict[i].size(); j++) {
+                if (p->next[dict[i][j]-'a'] == NULL) {
+                    p->next[dict[i][j]-'a'] = new TrieNode();
+                }
+                p = p->next[dict[i][j]-'a'];
+            }
+            p->isLast = true;
+        }
+    }
+    
+    // 写的有问题，题目要求是必须替换一个字符，而不是至多替换一个字符，所以此处不能用dfs
+    bool dfs(string &word, int index, TrieNode *root, bool modified) {
+        if (root == NULL) return false;
+        if (index >= word.size()) return root->isLast;
+
+        if (root->next[word[index]-'a'] == NULL) {
+            if (modified) return false;
+            modified = true;
+            for (int i = 0; i < 26; i++) {
+                if (root->next[i] == NULL) continue;
+                if (dfs(word, index+1, root->next[i], modified)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return dfs(word, index+1, root->next[word[index]-'a'], modified);
+        }
+    }
+
+    /** Returns if there is any word in the trie that equals to the given word after modifying exactly one character */
+    bool mustSearch(string word) {
+        TrieNode *p = root;
+        for (int i = 0; i < word.size(); i++) {
+            if (p->next[word[i]-'a'] == NULL) {
+                return false;
+            }
+            p = p->next[word[i]-'a'];
+        }
+        return p->isLast;
+    }
+
+    bool search(string word) {
+        bool modified = false;
+        return dfs(word, 0, root, modified);
+    }
+};
+
+/**
+ * Your MagicDictionary object will be instantiated and called as such:
+ * MagicDictionary* obj = new MagicDictionary();
+ * obj->buildDict(dict);
+ * bool param_2 = obj->search(word);
+ */
