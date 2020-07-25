@@ -1,0 +1,86 @@
+class TrieNode {
+public:
+    char data;
+    TrieNode* next[26];
+    bool isLast;
+
+    TrieNode(char data) {
+        this->data = data;
+        this->isLast = false;
+        memset(this->next, 0, sizeof(this->next));
+    }
+};
+
+class Trie {
+public:
+    TrieNode *root;
+
+    /** Initialize your data structure here. */
+    Trie() {
+        this->root = new TrieNode(0);
+    }
+    
+    /** Inserts a word into the trie. */
+    void insert(string word) {
+        TrieNode *p = root;
+        for (int i = 0; i < word.size(); i++) {
+            int ch = word[i] - 'a';
+            if (p->next[ch] == NULL) {
+                p->next[ch] = new TrieNode(word[i]);
+            }
+            p = p->next[ch];
+        }
+        p->isLast = true;
+    }
+    
+    /** Returns if the word is in the trie. */
+    int search(string word) {
+        TrieNode* p = root;
+        for (int i = 0; i < word.size(); i++) {
+            int ch = word[i] - 'a';
+            if (p->next[ch] == NULL) {
+                return -1;
+            }
+            p = p->next[ch];
+            if (p->isLast) {
+                return i;
+            }
+        }
+        return -1;
+    }
+};
+
+class Solution {
+public:
+    vector<string> stringSplit(string s, char delim) {
+        vector<string> ans;
+        istringstream ss(s);
+        string rs;
+        while (getline(ss, rs, delim)) {
+            ans.push_back(rs);
+        }
+        return ans;
+    }
+
+    string replaceWords(vector<string>& dict, string sentence) {
+        Trie tr;
+        for (int i = 0; i < dict.size(); i++) {
+            tr.insert(dict[i]);
+        }
+        vector<string> vec = stringSplit(sentence, ' ');
+        for (int i = 0; i < vec.size(); i++) {
+            int index = tr.search(vec[i]);
+            if (index == -1) continue;
+            vec[i] = vec[i].substr(0, index + 1);
+        }
+        string s = "";
+        for (int i = 0; i < vec.size(); i++) {
+            if (vec[i].size() == 0) continue; // 截没的情况
+            s += vec[i];
+            if (i != vec.size()-1) {
+                s += " ";
+            }
+        }
+        return s;
+    }
+};
