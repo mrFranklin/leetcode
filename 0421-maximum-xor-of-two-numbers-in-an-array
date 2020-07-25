@@ -1,0 +1,62 @@
+class TrieNode {
+public:
+    TrieNode* next[2];
+    TrieNode() {
+        memset(this->next, 0, sizeof(this->next));
+    }
+};
+class Solution {
+private:
+    TrieNode* root = new TrieNode();
+public:
+    // trie insert变种，边插入边比较
+    int insert(int num, int len) {
+        if (len <= 0) return 0;
+        int data;
+        int max = 0;
+        TrieNode *p = root;
+        TrieNode *q = root;
+        while (len > 0) {
+            int mask = num & (1 << (len-1));
+            int data = mask >> (len - 1);
+            if (p && p->next[data^1] != NULL) { // 判断是否存在与data异或后为1的值，即为最大值（0，1）；性质：x^y=z x^z=y
+                max = (max << 1) + 1;
+                p = p->next[data^1];
+            } else {
+                max = max << 1;
+                if (p) {
+                    p = p->next[data];                
+                }
+            }
+            
+            if (q->next[data] == NULL) {
+                q->next[data] = new TrieNode();
+            }
+            q = q->next[data];
+            num = num & ((1 << (len-1)) - 1);  // 去掉高位
+            len--;
+        }
+        return max;
+    }
+
+    int findMaximumXOR(vector<int>& nums) {
+        if (nums.size() == 0) return 0;
+
+        int max = 0;
+        for (int num : nums) {
+            if (max < num) max = num;
+        }
+        int maxLen = 0;
+        while (max != 0) {
+            ++maxLen;
+            max >>= 1;
+        }
+
+        for (int num : nums) {
+            int len = insert(num, maxLen);
+            if (max < len) max = len;
+        }
+
+        return max;
+    }
+};
