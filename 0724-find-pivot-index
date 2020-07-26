@@ -1,0 +1,34 @@
+class Solution {
+public:
+    // 前缀和
+    int pivotIndex1(vector<int>& nums) {
+        vector<int> presum;
+        presum.push_back(0);
+        for (int num : nums) {
+           presum.push_back(presum.back() + num);
+        }
+        int sum1, sum2;
+        int n = nums.size();
+        for (int i = 0; i < n; i++) {
+            if (presum[i] == presum[n] - presum[i+1]) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    // 优化，动态计算前缀和，不需要提前开辟map
+    int pivotIndex(vector<int>& nums) {
+        int total = 0;
+        for (int num : nums) {
+            total += num;
+        }
+        int presum = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            if (2 * presum + nums[i] == total) {
+                return i;
+            }
+            presum += nums[i];
+        }
+        return -1;
+    }
+};

@@ -1,0 +1,21 @@
+class NumArray {
+public:
+    vector<int> presum;
+
+    NumArray(vector<int>& nums) {
+        presum.push_back(0);
+        for (int num : nums) {
+            presum.push_back(presum.back() + num);
+        }
+    }
+    
+    int sumRange(int i, int j) {
+        return presum[j+1] - presum[i];
+    }
+};
+
+/**
+ * Your NumArray object will be instantiated and called as such:
+ * NumArray* obj = new NumArray(nums);
+ * int param_1 = obj->sumRange(i,j);
+ */
