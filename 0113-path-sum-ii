@@ -9,27 +9,21 @@
  */
 class Solution {
 public:
-    void dfs(TreeNode* root, int sum, vector<TreeNode*> &cache, vector<vector<int>> &ans) {
+    void dfs(TreeNode* root, int sum, vector<int> &cache, vector<vector<int>> &ans) {
         if (root == NULL) return;
+        cache.push_back(root->val);
         if (root->left == NULL && root->right == NULL) {
             if (root->val == sum) {
-                vector<int> vec;
-                for (TreeNode* node : cache) {
-                    vec.push_back(node->val);
-                }
-                vec.push_back(root->val);
-                ans.push_back(vec);
+                ans.push_back(cache);
             }
-            return;
         }
-        cache.push_back(root);
-        dfs(root->left, sum - root->val, cache, ans);
-        dfs(root->right, sum - root->val, cache, ans);
+        if (root->left) dfs(root->left, sum - root->val, cache, ans);
+        if (root->right) dfs(root->right, sum - root->val, cache, ans);
         cache.pop_back();
     }
     vector<vector<int>> pathSum(TreeNode* root, int sum) {
         vector<vector<int>> ans;
-        vector<TreeNode*> cache;
+        vector<int> cache;
         dfs(root, sum, cache, ans);
 
         return ans;
