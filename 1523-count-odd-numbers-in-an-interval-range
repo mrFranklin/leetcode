@@ -1,0 +1,11 @@
+class Solution {
+public:
+    // 统计奇数个数，前缀和思想
+    int count(int n) {
+        return (n + 1) / 2;
+    }
+    int countOdds(int low, int high) {
+        // high之前的奇数，减去low之前的奇数
+        return count(high) - count(low - 1);
+    }
+};

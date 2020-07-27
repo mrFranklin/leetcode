@@ -1,0 +1,24 @@
+class Solution {
+public:
+    // 其实是前缀和思想
+    int numSplits(string s) {
+        int ans = 0;
+        unordered_map<char, int> m1;
+        unordered_map<char, int> m2;
+        for (int i = 0; i < s.size(); i++) {
+            m2[s[i]]++;
+        }
+        int sum2 = m2.size();
+        for (int i = 0; i < s.size()-1; i++) {
+            m1[s[i]]++;
+            if (--m2[s[i]] == 0) {
+                // m2.erase(s[i]) 这种方式不优雅
+                sum2--;
+            }
+            if (m1.size() == sum2) {
+                ans++;
+            }
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,11 @@
+class Solution {
+public:
+    // 脑机急转弯 或者 前缀和思想
+    int minNumberOperations(vector<int>& target) {
+        int re = target[0];
+        for (int i = 1; i < target.size(); ++i) {
+            if (target[i-1] < target[i]) re += target[i] - target[i-1];
+        }
+        return re;
+    }
+};
