@@ -1,0 +1,27 @@
+class Solution {
+public:
+    // 前缀和，动态记录最小前缀和
+    int maxSubArray1(vector<int>& nums) {
+        if (nums.size() == 0) return 0;
+        int presum = 0;
+        int min = presum;
+        int max = INT_MIN;
+        for (int i = 0; i < nums.size(); i++) {
+            presum += nums[i];
+            if (max < presum - min) max = presum - min;
+            if (min > presum) min = presum;
+        }
+        return max;
+    }
+    // dp
+    int maxSubArray(vector<int>& nums) {
+        if (nums.size() == 0) return 0;
+        int dp = nums[0];
+        int ans = nums[0];
+        for (int i = 1; i < nums.size(); i++) {
+            dp = max(nums[i], dp + nums[i]);
+            ans = max(ans, dp);
+        }
+        return ans;
+    }
+};
