@@ -1,0 +1,38 @@
+class Solution {
+public:
+    // from yxc, 慢
+    int magicalString(int n) {
+        string s = "122";
+        int count = 3;
+        for (int i = 2, k = 1; count < n; i++, k = 3 - k) {
+            count += s[i] - '0';
+            for (int j = 0; j < s[i] - '0'; j++)  {
+                s += to_string(k);
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) res += s[i] == '1';
+        return res;
+    }
+
+    // todo. 解答错误
+    int magicalString2(int n) {
+        string s = "122";
+        int ans = 1;
+        int p = 2;
+        int cur = '2';
+        for (int i = 2; i < n; i++) {
+            if (s.size() > n)
+            if (s[i] == '2') {
+                if (cur == '2') s += "11", cur = '1', ans += 2, i++;
+                else s += "22", cur = '2', i++;
+            } else {
+                if (cur == '2') s += '1', cur = '1', ans += 2;
+                else s += '2', cur = '2';
+            }
+        }
+        int sn = s.size();
+        while (sn-- > n && s.back() == '1') ans--;
+        return ans;
+    }
+};

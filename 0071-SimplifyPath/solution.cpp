@@ -8,7 +8,8 @@ public:
         st.pop();
         return print(st) + ch;
     }
-    string simplifyPath(string path) {
+    // mine 慢
+    string simplifyPath1(string path) {
         if (path == "") {
             return "";
         }
@@ -31,5 +32,28 @@ public:
         }
         
         return print(st);
+    }
+
+    // from yxc
+    string simplifyPath(string path) {
+        path += "/";
+        string s, res;
+        for (auto c : path) {
+            if (res.empty()) res += c;
+            if (c != '/') s += c;
+            else {
+                if (s == "..") {
+                    if (res.size() > 1) {
+                        res.pop_back();
+                        while (res.back() != '/') res.pop_back();
+                    }
+                } else if (s != "" && s != ".") {
+                    res += s + '/';
+                }
+                s = "";
+            }
+        }
+        if (res.size() > 1) res.pop_back();
+        return res;
     }
 };
