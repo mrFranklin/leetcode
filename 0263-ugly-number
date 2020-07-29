@@ -1,0 +1,26 @@
+class Solution {
+public:
+    // 递归
+    bool isUgly1(int num) {
+        if (num == 0) return false;
+        if (num == 1) return true;
+        bool ret = false;
+        if (num % 2 == 0) ret = isUgly(num / 2);
+        if (ret) return true;
+        if (num % 3 == 0) ret = isUgly(num / 3);
+        if (ret) return true;
+        if (num % 5 == 0) ret = isUgly(num / 5);
+        if (ret) return true;
+        return false;
+    }
+    // 模拟, from yxc
+    bool isUgly(int num) {
+        int d[] = {2, 3, 5};
+        for (auto prime : d) {
+            while (num > 0 && num % prime == 0) {
+                num /= prime;
+            }
+        }
+        return num == 1;
+    }
+};
