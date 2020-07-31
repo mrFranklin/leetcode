@@ -1,0 +1,44 @@
+class Solution {
+public:
+    // mine, ugly
+    int computeArea1(int A, int B, int C, int D, int E, int F, int G, int H) {
+        if (A > E) {
+            swap(A, E), swap(B, F), swap(C, G), swap(D, H); // A在左侧
+        }
+        long area = (long)(C - A) * (D - B) + (G - E) * (H - F);
+        long c = 0;
+        if (E >= C || H <= B || F >= D) return area;
+        else if (F <= B && H <= D) {
+            if (G <= C) {
+                c = (long)(G - E) * (H - B);
+            } else {
+                c = (long)(C - E) * (H - B);
+            }
+        } else if (F >= B && H <= D) {
+            if (G <= C) {
+                c = (long)(G - E) * (H - F);
+            } else {
+                c = (long)(C - E) * (H - F);
+            }
+        } else if (F >= B && H >= D) {
+            if (G <= C) {
+                c = (long)(G - E) * (D - F);
+            } else {
+                c = (long)(C - E) * (D - F);
+            }
+        } else {
+            if (G <= C) {
+                c = (long)(G - E) * (D - B);
+            } else {
+                c = (long)(C - E) * (D - B);
+            }
+        }
+        return area - c;
+    }
+    // from yxc
+    int computeArea(int A, int B, int C, int D, int E, int F, int G, int H) {
+        long long x = min(C, G) + 0ll - max(A, E);
+        long long y = min(D, H) + 0ll - max(B, F);
+        return (C - A) * (D - B) - max(0ll, x) * max(0ll, y) + (G - E) * (H - F);
+    }
+};
