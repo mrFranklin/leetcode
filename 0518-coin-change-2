@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int change1(int amount, vector<int>& coins) {
+        int n = coins.size();
+        int m = amount;
+        vector<vector<int>> f(n + 1, vector<int>(m + 1));
+        for (int i = 0; i <= n; i++) f[i][0] = 1; // 钱币和为0，不选，只此一种方案
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                f[i][j] = f[i - 1][j];
+                if (j >= coins[i - 1]) f[i][j] += f[i][j - coins[i - 1]];
+            }
+        }
+        return f[n][m];
+    }
+
+    // 优化
+    int change(int amount, vector<int>& coins) {
+        int n = coins.size();
+        int m = amount;
+        vector<int> f(m + 1);
+        f[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (j >= coins[i - 1]) f[j] = f[j] + f[j - coins[i - 1]];
+            }
+        }
+        return f[m];
+    }
+};

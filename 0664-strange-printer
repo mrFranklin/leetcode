@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int strangePrinter(string s) {
+        if (s.empty()) return 0;
+        int n = s.size();
+        vector<vector<int>> f(n + 1, vector<int>(n + 1));
+        for (int len = 1; len <= n; len++) {
+            for (int l = 0; l + len - 1 < n; l++) { // 左端点
+                int r = l + len - 1; // 右端点
+                f[l][r] = f[l + 1][r] + 1; // 只染最左侧
+                for (int k = l + 1; k <= r; k++) { // 遍历，染到l+1...染到r
+                    // 遇到和第一个字符一样的颜色，说明此次不需要染色(可通过那一次一次性染过来)，只统计前一次(f[l][k - 1])的即可，别忘了再把后面的次数加上
+                    if (s[k] == s[l]) f[l][r] = min(f[l][r], f[l][k - 1] + f[k + 1][r]);
+                }
+            }
+        }
+        return f[0][n - 1];
+    }
+};
