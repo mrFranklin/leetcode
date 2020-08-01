@@ -1,0 +1,34 @@
+class Solution {
+public:
+    // dp
+    int numDistinct1(string s, string t) {
+        int n = s.size();
+        int m = t.size();
+        vector<vector<long long>> f(n + 1, vector<long long>(m + 1));
+        f[0][0] = 1;
+        for (int i = 1; i <= n; i++) {
+            f[i][0] = 1;
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m && j <= i; j++) {
+                f[i][j] = f[i - 1][j];
+                if (s[i - 1] == t[j - 1]) f[i][j] += f[i - 1][j - 1];
+            }
+        }
+        return f[n][m];
+    }
+
+    // 优化成一维
+    int numDistinct(string s, string t) {
+        int n = s.size();
+        int m = t.size();
+        vector<long long> f(m + 1);
+        f[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = m; j >= 1; j--) {
+                if (s[i - 1] == t[j - 1]) f[j] += f[j - 1];
+            }
+        }
+        return f[m];
+    }
+};

@@ -1,0 +1,40 @@
+class Solution {
+public:
+    // 超时~
+    int nthUglyNumber1(int n) {
+        if (n <= 0) return 1;
+        
+        int darray[3] = {2, 3, 5};
+        unordered_set<int> s;
+        s.insert(1);
+        int c = 1;
+        int i = 1;
+        while (c < n) {
+            i++;
+            for (auto d : darray) {
+                if (i % d == 0 && s.count(i / d)) {
+                    s.insert(i);
+                    c++;
+                    break;
+                }
+            }
+        }
+        return i;
+    }
+
+    // from yxc
+    int nthUglyNumber(int n) {
+        if (n <= 0) return 0;
+        vector<int> q;
+        q.push_back(1);
+        int i = 0, j = 0, k = 0;
+        while (--n) {
+            int t = min(q[i] * 2, min(q[j] * 3, q[k] * 5));
+            q.push_back(t);
+            if (q[i] * 2 == t) i++;
+            if (q[j] * 3 == t) j++;
+            if (q[k] * 5 == t) k++;
+        }
+        return q.back();
+    }
+};
