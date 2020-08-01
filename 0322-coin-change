@@ -1,0 +1,15 @@
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        int n = coins.size();
+        int m = amount;
+        vector<int> f(m + 1, INT_MAX / 2);
+        f[0] = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = coins[i]; j <= m; j++) {
+                f[j] = min(f[j], f[j - coins[i]] + 1);
+            }
+        }
+        return f[m] == INT_MAX / 2 ? -1 : f[m];
+    }
+};

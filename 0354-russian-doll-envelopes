@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int maxEnvelopes(vector<vector<int>>& envelopes) {
+        if (envelopes.size() == 0) return 0;
+        sort(envelopes.begin(), envelopes.end());
+        int n = envelopes.size();
+        vector<int> f(n, 1);
+        for (int i = 1; i < n; i++) {
+            int w = envelopes[i][0];
+            int h = envelopes[i][1];
+            for (int j = 0; j < i; j++) {
+                int jw = envelopes[j][0];
+                int jh = envelopes[j][1];
+                if (w > jw && h > jh) {
+                    f[i] = max(f[i], f[j] + 1);
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) res = max(res, f[i]);
+        return res;
+    }
+};

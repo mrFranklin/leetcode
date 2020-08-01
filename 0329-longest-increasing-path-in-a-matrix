@@ -1,0 +1,68 @@
+class Solution {
+public:
+    int dfs(vector<vector<int>>& m, int i, int j, vector<vector<int>>& memo) {
+        if (memo[i][j] > 0) return memo[i][j];
+        int l = 1;
+        if (i - 1 >= 0 && m[i][j] < m[i - 1][j]) {
+            l = max(l, dfs(m, i - 1, j, memo) + 1);
+        }
+        if (i + 1 < m.size() && m[i][j] < m[i + 1][j]) {
+            l = max(l, dfs(m, i + 1, j, memo) + 1);
+        }
+        if (j - 1 >= 0 && m[i][j] < m[i][j - 1]) {
+            l = max(l, dfs(m, i, j - 1, memo) + 1);
+        }
+        if (j + 1 < m[0].size() && m[i][j] < m[i][j + 1]) {
+            l = max(l, dfs(m, i, j + 1, memo) + 1);
+        }
+        memo[i][j] = l;
+        return l;
+    }
+    // dfs
+    int longestIncreasingPath1(vector<vector<int>>& matrix) {
+        if (matrix.size() == 0) return 0;
+        int n = matrix.size();
+        int m = matrix[0].size();
+        int res = 0;
+        vector<vector<int>> memo(n, vector<int>(m));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                res = max(res, dfs(matrix, i, j, memo));
+            }
+        }
+        return res;
+    }
+
+    // 拓扑排序 todo
+    int longestIncreasingPath2(vector<vector<int>>& matrix) {
+        return 0;
+    }
+
+    vector<vector<int>> f;
+    int dx[4] = {-1, 0, 1, 0}, dy[4] = {0, 1, 0, -1};
+    int n, m;
+    int dp(vector<vector<int>>& matrix, int x, int y) {
+        if (f[x][y] != 0) return f[x][y];
+        f[x][y] = 1;
+        for (int i = 0; i < 4; i++) {
+            int a = x + dx[i], b = y + dy[i];
+            if (a >= 0 && a < n && b >= 0 && b < m && matrix[a][b] > matrix[x][y])
+                f[x][y] = max(f[x][y], dp(matrix, a, b) + 1);
+        }
+        return f[x][y];
+    }
+    // from yxc, 记忆化搜索
+    int longestIncreasingPath(vector<vector<int>>& matrix) {
+        if (matrix.size() == 0) return 0;
+        n = matrix.size();
+        m = matrix[0].size();
+        int res = 0;
+        f = vector<vector<int>>(n, vector<int>(m));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                res = max(res, dp(matrix, i, j));
+            }
+        }
+        return res;
+    }
+};

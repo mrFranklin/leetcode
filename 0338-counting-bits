@@ -1,0 +1,29 @@
+class Solution {
+public:
+    // mine
+    vector<int> countBits1(int num) {
+        vector<int> f(num + 1);
+        if (num == 0) return f;
+        f[1] = 1;
+        if (num == 1) return f;
+        int cur = 2;
+        for (int i = 2; i <= num; i++) {
+            if (i % cur == 0) {
+                f[i] = 1;
+                cur = i;
+            } else {
+                f[i] = f[i - cur] + 1;
+            }
+        }
+        return f;
+    }
+    // from yxc
+    vector<int> countBits(int num) {
+        vector<int> f(num + 1);
+        if (num == 0) return f;
+        for (int i = 1; i <= num; i++) {
+            f[i] = f[i >> 1] + (i & 1);
+        }
+        return f;
+    }
+};
