@@ -1,0 +1,37 @@
+class Solution {
+public:
+    // ugly
+    string convert(string s, int numRows) {
+        if (numRows == 1) return s;
+        int n = s.size();
+        vector<vector<char>> vec(numRows, vector<char>(n));
+        int dir = 0; // 0, 1
+        int i = 0, j = 0;                                        
+        for (auto c : s) {                                            
+            vec[i][j] = c;
+
+            if (dir == 0) {
+                if (i == numRows - 1) {
+                    dir = 1;
+                    i--, j++;
+                } else {
+                    i++;
+                }
+            } else {
+                if (i <= 0) {
+                    dir = 0;
+                    i++;
+                } else {
+                    i--, j++;
+                }
+            }
+        }
+        string res = "";
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < n; j++) {
+                 if (vec[i][j]) res += vec[i][j];
+            }
+        }
+        return res;
+    }
+};
