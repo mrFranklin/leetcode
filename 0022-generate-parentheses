@@ -1,0 +1,47 @@
+/*
+n = 1 -> 1
+()
+
+n = 2 -> 2
+()(), (())
+
+n = 3 -> 5
+()()(), (()()), (())(), ()(()), ((()))
+*/
+class Solution {
+public:
+
+    void dfs(string s, int left, int right, vector<string> &res) {
+        if (left == 0 && right == 0) {
+            res.push_back(s);
+        }
+        if (left > 0) dfs(s + "(", left - 1, right, res);
+        if (right > left) dfs(s + ")", left, right - 1, res);
+    }
+    // dfs
+    vector<string> generateParenthesis1(int n) {
+        if (n == 0) return {};
+        vector<string> res;
+        dfs("", n, n, res);
+        return res;
+    }
+
+    // dp
+    vector<string> generateParenthesis(int n) {
+        vector<vector<string>> f(n + 1);
+        f[0] = vector<string>(1, "");
+        for (int i = 1; i <= n; i++) {
+            f[i] = vector<string>();
+            for (int j = 0; j < i; j++) {
+                vector<string> v1 = f[j];
+                vector<string> v2 = f[i - j - 1];
+                for (auto s1 : v1) {
+                    for (auto s2 : v2) {
+                        f[i].push_back("(" + s1 + ")" + s2);
+                    }
+                }
+            }
+        }
+        return f[n];
+    }
+};
