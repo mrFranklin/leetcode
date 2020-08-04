@@ -1,0 +1,22 @@
+/*
+abcbcd
+bcd
+*/
+class Solution {
+public:
+    // todo. kmp，sunday，bm。。。
+    int strStr(string haystack, string needle) {
+        int n = haystack.size(), m = needle.size();
+        if (m == 0) return 0;
+        if (n == 0) return -1;
+
+        int k = 0, i, j;
+        while (k + m <= n) {
+            i = k, j = 0;
+            while (i < n && j < m && haystack[i] == needle[j]) i++, j++;
+            if (j == m) return i - m;
+            k++;
+        }
+        return -1;
+    }
+};
