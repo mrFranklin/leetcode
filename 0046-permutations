@@ -1,0 +1,53 @@
+class Solution {
+public:
+    // dfs
+    vector<vector<int>> dfs(vector<int>& nums, int n) {
+        if (n == 0) return {{}};
+        auto vv = dfs(nums, n - 1);
+        vector<vector<int>> res;
+        int index = 0;
+        while (index < n) {
+            for (auto v : vv) {
+                vector<int> newv;
+                for (int i = 0; i < index && i < v.size(); i++) {
+                    newv.push_back(v[i]);
+                }
+                newv.push_back(nums[n - 1]);
+                for (int i = index; i < v.size(); i++) {
+                    newv.push_back(v[i]);
+                }
+                res.push_back(newv);
+            }
+            index++;
+        }
+        return res;
+    }
+
+    vector<vector<int>> permute1(vector<int>& nums) {
+        return dfs(nums, nums.size());
+    }
+
+    void backtrace(vector<int>& nums, vector<int>& memo, vector<vector<int>>& res, vector<bool>& visited) {
+        if (memo.size() == nums.size()) {
+            res.push_back(memo);
+            return;
+        }
+        for (int i = 0; i < nums.size(); i++) {
+            if (visited[i]) continue;
+            visited[i] = true;
+            memo.push_back(nums[i]);
+            backtrace(nums, memo, res, visited);
+            visited[i] = false;
+            memo.pop_back();
+        }
+    }
+
+    // backtrace
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<vector<int>> res;
+        vector<int> memo;
+        vector<bool> visited(nums.size());
+        backtrace(nums, memo, res, visited);
+        return res;
+    }
+};
