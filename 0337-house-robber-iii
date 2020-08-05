@@ -1,0 +1,42 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int dfs(TreeNode* root, unordered_map<TreeNode*, int> &memo) {
+        if (root == NULL) return 0;
+        if (memo[root]) return memo[root];
+        int res = root->val;
+        if (root->left) res += dfs(root->left->left, memo) + dfs(root->left->right, memo);
+        if (root->right) res += dfs(root->right->left, memo) + dfs(root->right->right, memo);
+        
+        memo[root] = max(res, dfs(root->left, memo) + dfs(root->right, memo));
+        return memo[root];
+    }
+
+    // 记忆化搜索
+    int rob1(TreeNode* root) {
+        unordered_map<TreeNode*, int> memo;
+        return dfs(root, memo);
+    }
+
+    vector<int> dp(TreeNode* root) {
+        if (root == NULL) return {0, 0};
+        auto left = dp(root->left);
+        auto right = dp(root->right);
+        int res1 = left[1] + right[1];
+        int res2 = max(res1, root->val + left[0] + right[0]);
+        return {res1, res2};
+    }
+    // dp
+    int rob(TreeNode* root) {
+        auto res = dp(root);
+        return max(res[0], res[1]);
+    }
+};

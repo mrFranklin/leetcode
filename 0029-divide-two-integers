@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int divide(int dividend, int divisor) {
+        if (divisor == 1) return dividend;
+        else if (divisor == -1) {
+            if (dividend == INT_MIN) return INT_MAX;
+            else return -dividend;
+        }
+
+        bool sign = dividend < 0 && divisor > 0 || dividend > 0 && divisor < 0;
+        long long ldividend = abs(dividend);
+        long long ldivisor = abs(divisor);
+        
+        long long res = 0, d = ldivisor;
+        int count = 0;
+        while (d <= ldividend) {
+            d <<= 1;
+            count++;
+        }
+        long long n, m;
+        while (count) {
+            count--;
+            n = count - 1 >= 0 ? 2 << (count - 1) : 1;
+            m = ldivisor * n;
+            if (ldividend >= m) {
+                res += n;
+                ldividend -= m;
+            }
+        }
+        if (sign) res = -res;
+        if (res > INT_MAX) return INT_MAX;
+        else if (res < INT_MIN) return INT_MIN;
+        return res;
+    }
+};
