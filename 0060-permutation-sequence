@@ -1,0 +1,62 @@
+class Solution {
+public:
+    bool backtrace(vector<int>& nums, vector<int>& memo, int& k, vector<int>& visited) {
+        if (memo.size() == nums.size()) {
+            if (--k == 0) return true;
+            else return false;
+        }
+        for (int i = 0; i < nums.size(); i++) {
+            if (visited[i]) continue;
+            visited[i] = true;
+            memo.push_back(nums[i]);
+            if (backtrace(nums, memo, k, visited)) return true;
+            visited[i] = false;
+            memo.pop_back();
+        }
+        return false;
+    }
+    // backtrace
+    string getPermutation1(int n, int k) {
+        if (n <= 0 || k <= 0) return "";
+        vector<int> nums(n);
+        for (int i = 1; i <= n; i++) {
+            nums[i - 1] = i;
+        }
+        vector<int> visited(n);
+        vector<int> memo;
+        backtrace(nums, memo, k, visited);
+        string s;
+        for (int i = 0; i < memo.size(); i++) s += memo[i] + '0';
+        return s;
+    }
+
+    // 阶乘函数可以预置
+    int fac(int n) {
+        int res = 1;
+        while (n > 1) {
+            res *= n;
+            n--;
+        }
+        return res;
+    }
+    // math, good!
+    string getPermutation(int n, int k) {
+        if (n <= 0 || k <= 0) return "";
+        vector<int> nums(n);
+        for (int i = 1; i <= n; i++) {
+            nums[i - 1] = i;
+        }
+        string s;
+        k--;
+        while (n) {
+            int f = fac(nums.size() - 1);
+            int i;
+            i = k / f;
+            s += nums[i] + '0';
+            nums.erase(nums.begin() + i);
+            k %= f;
+            n--;
+        }
+        return s;
+    }
+};
