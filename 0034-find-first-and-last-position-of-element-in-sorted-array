@@ -1,0 +1,44 @@
+class Solution {
+public:
+    // ugly
+    vector<int> searchRange1(vector<int>& nums, int target) {
+        int n = nums.size();
+        int left = 0, right = n - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) {
+                int ml = mid, rl = mid;
+                while (ml >= 1 && nums[ml - 1] == nums[ml]) ml--;
+                while (rl < n - 1 && nums[rl] == nums[rl + 1]) rl++;
+                return {ml, rl};
+            } else if (nums[mid] < target) left = mid + 1;
+            else right = mid - 1;
+        }
+        return {-1, -1};
+    }
+    // better 查找两次：不小于的第一个元素，不大于的最后个元素
+    vector<int> searchRange(vector<int>& nums, int target) {
+        int n = nums.size();
+        if (n == 0) return {-1, -1};
+
+        int left = 0, right = n - 1;
+        int mid;
+        while (left < right) {
+            mid = left + (right - left) / 2;
+            if (nums[mid] < target) left = mid + 1;
+            else right = mid;
+        }
+        int res1 = nums[left] == target ? left : -1;
+        if (res1 == -1) return {-1, -1};
+
+        left = 0, right = n - 1;
+        while (left < right) {
+            mid = left + (right - left + 1) / 2; // 注意此处，left = mid，所以要向上取整，防止死循环！
+            if (nums[mid] > target) right = mid - 1;
+            else left = mid;
+        }
+        int res2 = nums[right] == target ? right : -1;
+        
+        return {res1, res2};
+    }
+};
