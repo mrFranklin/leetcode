@@ -1,0 +1,36 @@
+class Solution {
+public:
+    bool dfs(vector<vector<char>>& board, int i, int j, unordered_set<int> rowMap[9], unordered_set<int> colMap[9], unordered_set<int> threeMap[9]) {
+        if (j == 9) return dfs(board, i + 1, 0, rowMap, colMap, threeMap);
+        if (i == 9) return true;
+
+        if (board[i][j] != '.') return dfs(board, i, j + 1, rowMap, colMap, threeMap);
+        for (int k = 1; k <= 9; k++) {
+            int index = i / 3 * 3 + j / 3;
+            if (rowMap[i].count(k) || colMap[j].count(k) || threeMap[index].count(k)) continue;
+            board[i][j] = k + '0';
+            rowMap[i].insert(k), colMap[j].insert(k), threeMap[index].insert(k);
+            if (dfs(board, i, j + 1, rowMap, colMap, threeMap)) return true;
+            board[i][j] = '.';
+            rowMap[i].erase(k), colMap[j].erase(k), threeMap[index].erase(k);
+        }
+        return false;
+    }
+    // todo. 优化
+    void solveSudoku(vector<vector<char>>& board) {
+        int n = board.size();
+        int m = board[0].size();
+        unordered_set<int> rowMap[9], colMap[9], threeMap[9];
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] != '.') {
+                    rowMap[i].insert(board[i][j] - '0');
+                    colMap[j].insert(board[i][j] - '0');
+                    threeMap[i / 3 * 3 + j / 3].insert(board[i][j] - '0');
+                    //  = i % 3 * 3 + j % 3;
+                }
+            }
+        }
+        dfs(board, 0, 0, rowMap, colMap, threeMap);
+    }
+};
