@@ -1,0 +1,25 @@
+class Solution {
+public:
+    
+    void dfs(vector<int>& candidates, int start, int target, vector<int>& memo, vector<vector<int>>& res) {
+        if (target == 0) {
+            res.push_back(memo);   // vector元素是int值类型，这种拷贝没问题
+            return;
+        }
+        for (int i = start; i < candidates.size(); i++) {
+            if (target < candidates[i]) break;
+            memo.push_back(candidates[i]);
+            dfs(candidates, i, target - candidates[i], memo, res);
+            memo.pop_back();
+        }
+    }
+
+    // backtrace
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        sort(candidates.begin(), candidates.end());
+        vector<vector<int>> res;
+        vector<int> memo;
+        dfs(candidates, 0, target, memo, res);
+        return res;
+    }
+};
