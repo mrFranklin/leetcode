@@ -1,0 +1,17 @@
+class Solution {
+public:
+    int getWinner(vector<int>& arr, int k) {
+        int n = arr.size();
+        int count = 0, max = 0;
+        for (int i = 1; i < n; i++) {
+            if (arr[max] > arr[i]) {
+                count++;
+            } else {
+                max = i;
+                count = 1;
+            }
+            if (count >= k) return arr[max];
+        }
+        return arr[max];
+    }
+};
