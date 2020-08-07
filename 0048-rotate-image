@@ -1,0 +1,42 @@
+class Solution {
+public:
+    // mine
+    // (x, y) -> (n-1-y, x)
+    void rotate1(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        int start = 0, end = n - 1;
+        int nn = n;
+        while (nn > 1) {
+            vector<int> tmp;
+            for (int i = start; i <= end; i++) {
+                tmp.push_back(matrix[start][i]);
+            }
+            for (int i = start; i <= end; i++) {
+                matrix[start][n - 1 - i] = matrix[i][start];
+            }
+            for (int i = start; i <= end; i++) {
+                matrix[i][start] = matrix[n - 1 - start][i];
+            }
+            for (int i = start; i <= end; i++) {
+                matrix[end][i] = matrix[n - 1 - i][end];
+            }
+            for (int i = start; i <= end; i++) {
+                matrix[i][end] = tmp[i - start];
+            }
+            start++, end--, nn -= 2;
+        }
+    }
+    // better
+    void rotate(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        for (int i = 0; i < n / 2; i++) {
+            for (int j = i; j < n - 1 - i; j++) {
+                int tmp = matrix[i][j];
+                matrix[i][j] = matrix[n - 1 - j][i];
+                matrix[n - 1 - j][i] = matrix[n - 1 - i][n - 1 - j];
+                matrix[n - 1 - i][n - 1 - j] = matrix[j][n - 1 - i];
+                matrix[j][n - 1 - i] = tmp;
+            }
+        }
+    }
+};
