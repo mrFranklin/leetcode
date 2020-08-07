@@ -1,0 +1,110 @@
+struct TrieNode {
+    vector<TrieNode*> next;
+    bool isLast;
+    int index;
+
+    TrieNode() {
+        next.resize(26);
+        isLast = false;
+        index = -1;
+    }
+    void insertReverse(string& s, int index) {
+        TrieNode* p = this;
+        for (int i = s.size() - 1; i >= 0; i--) {
+            int d = s[i] - 'a';
+            if (p->next[d] == NULL) p->next[d] = new TrieNode();
+            p = p->next[d];
+        }
+        p->isLast = true;
+        p->index = index;
+    }
+
+    bool find(string& s, int start, int end, int& index) {
+        TrieNode* p = this;
+        int i = 0;
+        for (int i = start; i <= end; i++) {
+            int d = s[i] - 'a';
+            if (p->next[d] == NULL) return false;
+            p = p->next[d];
+        }
+        index = p->index;
+        return p->isLast;
+    }
+};
+
+class Solution {
+public:
+    bool checkPalindrome(string& s1, string& s2) {
+        int n1 = s1.size(), n2 = s2.size();
+        // if (n1 == 0 && n2 == 0) return true;
+        // else if (n1 == 0 || n2 == 0) return false;
+        int i1 = 0, i2 = n2 - 1;
+        while (i1 < n1 && i2 >= 0) {
+            if (s1[i1] != s2[i2]) return false;
+            i1++, i2--;
+        }
+        int left, right;
+        string s;
+        if (i1 == n1) {
+            left = 0, right = i2;
+            s = s2;
+        } else {
+            left = i1, right = n1 - 1;
+            s = s1;
+        }
+        while (left < right) {
+            if (s[left] != s[right]) return false;
+            left++, right--;
+        }
+        return true;
+    }
+    // 暴力法，1476ms~
+    vector<vector<int>> palindromePairs1(vector<string>& words) {
+        int n = words.size();
+        vector<vector<int>> res;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (checkPalindrome(words[i], words[j])) res.push_back({i, j});
+                if (checkPalindrome(words[j], words[i])) res.push_back({j, i});
+            }
+        }
+        return res;
+    }
+
+    bool isPalindrome(string& s, int start, int end) {
+        if (start >= end) return true;
+        int i = start, j = end;
+        while (i < j) {
+            if (s[i++] != s[j--]) return false;
+        }
+        return true;
+    }
+
+    // trie
+    vector<vector<int>> palindromePairs(vector<string>& words) {
+        int n = words.size();
+        TrieNode root;
+        vector<vector<int>> res;
+        for (int i = 0; i < n; i++) {
+            root.insertReverse(words[i], i);
+        }
+        for (int i = 0; i < n; i++) {
+            int m = words[i].size();
+            for (int j = 0; j <= m; j++) { // 注意空字符串的处理，也是合法的！
+                if (isPalindrome(words[i], j, m - 1)) {
+                    int index = 0;
+                    if (root.find(words[i], 0, j - 1, index) && i != index) {
+                        res.push_back({i, index});
+                    }
+                }
+                if (j > 0 && isPalindrome(words[i], 0, j - 1)) { // 注意j > 0，否则，跟上面有重复！！
+                    int index = 0;
+                    if (root.find(words[i], j, m - 1, index) && i != index) {
+                        res.push_back({index, i});
+                    }
+                }
+            }
+        }
+        return res;
+    }
+};
