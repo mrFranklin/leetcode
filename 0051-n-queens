@@ -1,0 +1,41 @@
+class Solution {
+public:
+    void dfs(int n, int row, vector<string>& memo, vector<vector<string>>& res, vector<bool>& colMap) {
+        if (row >= n) {
+            res.push_back(memo);
+            return;
+        }
+        int i = row;
+        for (int j = 0; j < n; j++) {
+            // check同一列，已缓存
+            if (colMap[j]) continue;
+            bool found = false;
+            // check左上
+            for (int ii = i - 1, jj = j - 1; ii >= 0 && jj >= 0; ii--, jj--) {
+                if (memo[ii][jj] == 'Q') {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) continue;
+            // check右上
+            for (int ii = i - 1, jj = j + 1; ii >= 0 && jj < n; ii--, jj++) {
+                if (memo[ii][jj] == 'Q') {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) continue;
+            memo[i][j] = 'Q', colMap[j] = true;
+            dfs(n, i + 1,  memo, res, colMap);
+            memo[i][j] = '.', colMap[j] = false;
+        }
+    }
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>> res;
+        vector<string> memo(n, string(n, '.'));
+        vector<bool> colMap(n);
+        dfs(n, 0, memo, res, colMap);
+        return res;
+    }
+};
