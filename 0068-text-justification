@@ -1,0 +1,56 @@
+class Solution {
+public:
+    vector<string> fullJustify(vector<string>& words, int maxWidth) {
+        vector<string> res;
+        vector<vector<string>> vec(1, vector<string>());
+        vector<int> vlen(1, 0);
+        for (int i = 0; i < words.size(); i++) {
+            if (vlen.back() + vec.back().size() + words[i].size() <= maxWidth) {
+                vec.back().push_back(words[i]);
+                vlen.back() += words[i].size();
+            } else {
+                vec.push_back(vector<string>(1, words[i]));
+                vlen.push_back(words[i].size());
+            }
+        }
+        for (int j = 0; j < vec.size(); j++) {
+            if (vec[j].size() == 0) continue;
+            auto sv = vec[j];
+            int gap, more;
+            int leftLen = (maxWidth - vlen[j]);
+            if (sv.size() == 1) {
+                gap = leftLen;
+                more = 0;
+            } else {
+                gap = leftLen / (sv.size() - 1);
+                more = leftLen % (sv.size() - 1);
+            }
+            string ss;
+            int slen = 0;
+            for (int i = 0; i < sv.size(); i++) {
+                if (j != vec.size() - 1) { // not last row
+                    ss += sv[i];
+                    if (i != sv.size() - 1 || sv.size() == 1) { // not last word in current row
+                        for (int k = 0; k < gap; k++) { // todo. 可优化为2分
+                            ss += " ";
+                        }
+                        ss += (more-- > 0 ? " " : "");
+                    }
+                } else { // last row
+                    slen += sv[i].size();
+                    ss += sv[i];
+                    if (i != sv.size() - 1) {
+                        slen += 1;
+                        ss += " ";
+                    } else {
+                        for (int k = 0; k < maxWidth - slen; k++) { // todo. 可优化为2分
+                            ss += " ";
+                        }
+                    }
+                }
+            }
+            res.push_back(ss);
+        }
+        return res;
+    }
+};
