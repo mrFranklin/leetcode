@@ -1,0 +1,38 @@
+class Solution {
+public:
+    // mine
+    vector<vector<int>> generateMatrix1(int n) {
+        int dx[4] = {0, 1, 0, -1}, dy[4] = {1, 0, -1, 0}; // 右，下，左，上
+        vector<vector<int>> res(n, vector<int>(n));
+        int d = 0;
+        int x = 0, y = 0;
+        int wall[4] = {0}; // 上，右，下，左
+        for (int i = 0; i < n * n; i++) {
+            res[x][y] = i + 1;
+            if (x + dx[d] < wall[0] || x + dx[d] >= n - wall[2] || y + dy[d] < wall[3] || y + dy[d] >= n - wall[1]) {
+                wall[d]++;
+                d = (d + 1) % 4;
+            }
+            x = x + dx[d], y = y + dy[d];
+        }
+        return res;
+    }
+
+    // better
+    vector<vector<int>> generateMatrix(int n) {
+        vector<vector<int>> res(n, vector<int>(n));
+        int l = 0, r = n - 1, t = 0, b = n - 1;
+        int num = 1, nn = n * n;
+        while (num <= nn) {
+            for (int i = l; i <= r; i++) res[t][i] = num++;
+            t++;
+            for (int i = t; i <= b; i++) res[i][r] = num++;
+            r--;
+            for (int i = r; i >= l; i--) res[b][i] = num++;
+            b--;
+            for (int i = b; i >= t; i--) res[i][l] = num++;
+            l++;
+        }
+        return res;
+    }
+};
