@@ -1,0 +1,32 @@
+class Solution {
+public:
+    void dfs(string s, int start, vector<int>& memo, vector<string>& res) {
+        if (memo.size() > 4) {
+            return;
+        } else if (memo.size() == 4) {
+            if (start == s.size()) {
+                string ss;
+                for (int i = 0; i < memo.size(); i++) {
+                    ss += to_string(memo[i]) + (i == memo.size() - 1 ? "" : ".");
+                }
+                res.push_back(ss);
+            }
+            else return;
+        }
+        int d = 0;
+        for (int i = start; i < start + 3 && i < s.size(); i++) {
+            d = d * 10 + (s[i] - '0');
+            if (d > 255) break;
+            memo.push_back(d);
+            dfs(s, i + 1, memo, res);
+            memo.pop_back();
+            if (d == 0) break; // warn here, 不能有前导0
+        }
+    }
+    vector<string> restoreIpAddresses(string s) {
+        vector<string> res;
+        vector<int> memo;
+        dfs(s, 0, memo, res);
+        return res;
+    }
+};
