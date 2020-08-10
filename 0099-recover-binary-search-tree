@@ -1,0 +1,97 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+private:
+    TreeNode* pre = nullptr;
+    TreeNode* cur = nullptr;
+public:
+
+    void inorder(TreeNode* root, vector<TreeNode*>& memo) {
+        
+        if (root->left) inorder(root->left, memo);
+        pre = cur;
+        cur = root;
+        if (pre != nullptr && cur->val < pre->val) {
+            if (memo[0] == nullptr) memo[0] = pre;
+            memo[1] = cur;
+        }
+        if (root->right) inorder(root->right, memo);
+    }
+    // 递归
+    void recoverTree1(TreeNode* root) {
+        vector<TreeNode*> memo(2);
+        inorder(root, memo);
+        swap(memo[0]->val, memo[1]->val);
+    }
+
+    // stack
+    void recoverTree2(TreeNode* root) {
+        stack<TreeNode*> st;
+        TreeNode *pre = nullptr, *cur = nullptr;
+        TreeNode *node1 = nullptr, *node2 = nullptr;
+        while (!st.empty() || root != nullptr) {
+            while (root != nullptr) {
+                st.push(root);
+                root = root->left;
+            }
+            pre = cur;
+            root = st.top(), st.pop();
+            cur = root;
+            if (pre != nullptr && cur->val < pre->val) {
+                if (node1 == nullptr) node1 = pre;
+                node2 = cur;
+            }
+            root = root->right;
+        }
+        swap(node1->val, node2->val);
+    }
+
+    // morris， 不使用栈
+    void recoverTree(TreeNode* root) {
+        TreeNode *pre = nullptr;
+        TreeNode *node1 = nullptr, *node2 = nullptr;
+        TreeNode *processor = nullptr;
+        while (root != nullptr) {
+            if (root->left != nullptr) {
+                processor = root->left;
+                // 查找前缀节点
+                while (processor->right != root && processor->right != nullptr) {
+                    processor = processor->right;
+                }
+                if (processor->right == nullptr) { // 未被遍历过
+                    processor->right = root;
+                    root = root->left;
+                } else { // 已经遍历过，不需再往左遍历
+                    processor->right = nullptr;
+
+                    if (pre != nullptr && root->val < pre->val) {
+                        if (node1 == nullptr) node1 = pre;
+                        node2 = root;
+                    }
+                    pre = root;
+                    root = root->right;
+                    
+                    
+                }
+            } else {
+                if (pre != nullptr && root->val < pre->val) {
+                    if (node1 == nullptr) node1 = pre;
+                    node2 = root;
+                }
+                pre = root;
+                root = root->right;
+            }
+        }
+
+        swap(node1->val, node2->val);
+    }
+};
