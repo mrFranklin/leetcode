@@ -1,0 +1,38 @@
+class Solution {
+public:
+    // 前缀和 + hashmap
+    int maxNonOverlapping1(vector<int>& nums, int target) {
+        int n = nums.size();
+        unordered_map<int, int> mp;
+        mp[0] = 1;
+        int res = 0;
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            if (mp.count(sum - target)) {
+                res++;
+                mp.clear();
+            }
+            mp[sum]++;
+        }
+        return res;
+    }
+
+    // 前缀和 + dp
+    int maxNonOverlapping(vector<int>& nums, int target) {
+        int n = nums.size();
+        vector<int> f(n + 1); // 第几个数字的最大个数
+        int sum = 0;
+        unordered_map<int, int> mp;
+        mp[0] = 0; // value表示第几个数字，比index多1
+        for (int i = 1; i <= n; i++) {
+            sum += nums[i - 1];
+            f[i] = f[i - 1];
+            if (mp.count(sum - target)) {
+                f[i] = max(f[i], f[mp[sum - target]] + 1);
+            }
+            mp[sum] = i;
+        }
+        return f[n];
+    }
+};
