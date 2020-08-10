@@ -1,0 +1,25 @@
+class Solution {
+public:
+    bool dfs(int maxNum, int target, int state, unordered_map<int, bool>& dp) {
+        if (dp.count(state)) return dp[state];
+        for (int i = 1; i <= maxNum; i++) {
+            int t = (1 << (i - 1));
+            if ((state & t) > 0) continue;
+            if (target <= i || !dfs(maxNum, target - i, state | t, dp)) {
+                dp[state] = true;
+                return true;
+            }
+        }
+        dp[state] = false;
+        return false;
+    }
+
+    // 状态压缩 + 博弈类dp（记忆化搜索）
+    bool canIWin(int maxChoosableInteger, int desiredTotal) {
+        if (desiredTotal > maxChoosableInteger * (maxChoosableInteger + 1) / 2) return false;
+        else if (desiredTotal <= maxChoosableInteger) return true;
+        unordered_map<int, bool> mp;
+        int state = 0;
+        return dfs(maxChoosableInteger, desiredTotal, state, mp);
+    }
+};
