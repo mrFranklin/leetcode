@@ -1,0 +1,42 @@
+class Solution {
+public:
+    // 模拟
+    int countBinarySubstrings1(string s) {
+        int n = s.size();
+        int res = 0;
+        int left = 0;
+        int i = 1;
+        while (i < n) {
+            if (s[i] != s[i - 1]) {
+                int c = 0;
+                while (c < i - left && i + c < n && s[i + c] != s[i - 1 - c]) {
+                    res++;
+                    c++;
+                }
+                left = i;
+                i += c;
+            } else {
+                i++;
+            }
+        }
+        return res;
+    }
+    // 记录相同字符数量，取相邻中最少的
+    int countBinarySubstrings(string s) {
+        int n = s.size();
+        int last = 0, count = 0;
+        int res = 0;
+        int i = 0;
+        while (i < n) {
+            char c = s[i];
+            last = count;
+            count = 0;
+            while (i < n && s[i] == c) {
+                count++;
+                i++;
+            }
+            res += min(last, count);
+        }
+        return res;
+    }
+};
