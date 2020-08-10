@@ -1,0 +1,25 @@
+class Solution {
+public:
+    // 状态压缩 + 前缀和 + hashmap
+    int longestAwesome(string s) {
+        unordered_map<int, int> m;
+        m[0] = -1; // 所有数字都出现偶数次，最左的位置为-1， i - m[0] = i + 1，正好为最大个数
+        int res = 0;
+        int status = 0;
+        for (int i = 0; i < s.size(); i++) {
+            status ^= 1 << (s[i] - '0');  // 数字s[i]出现的奇偶状态
+            if (!m.count(status)) {
+                m[status] = i;  // 记录s[i]的奇偶状态出现的最左边位置
+            } else { // 已存在，说明奇偶数相同，找到
+                res = max(res, i - m[status]);
+            }
+            for (int j = 0; j < 10; j++) { // 只有一位的奇偶数不同
+                int cur = status ^ (1 << j);
+                if (m.count(cur)) {
+                    res = max(res, i - m[cur]);
+                }
+            }
+        }
+        return res;
+    }
+};
