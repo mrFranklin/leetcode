@@ -1,0 +1,17 @@
+class Solution {
+public:
+    bool canConvertString(string s, string t, int k) {
+        if (s.size() != t.size()) return false;
+        int n = s.size();
+        vector<int> memo(26);
+        for (int i = 1; i < 26; i++) memo[i] = i - 26;
+        for (int i = 0; i < n; i++) {
+            if (s[i] == t[i]) continue;
+            int diff = t[i] - s[i];
+            if (diff < 0) diff += 26;
+            memo[diff] += 26;
+            if (memo[diff] > k) return false;
+        }
+        return true;
+    }
+};
