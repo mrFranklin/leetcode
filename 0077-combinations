@@ -1,0 +1,23 @@
+class Solution {
+public:
+    void dfs(vector<int>& vec, int k, int start, vector<int>& memo, vector<vector<int>>& res) {
+        if (memo.size() == k) {
+            res.push_back(memo);
+            return;
+        }
+        for (int i = start; i < vec.size(); i++) {
+            memo.push_back(vec[i]);
+            dfs(vec, k, i + 1, memo, res);
+            memo.pop_back();
+        }
+    }
+
+    vector<vector<int>> combine(int n, int k) {
+        vector<vector<int>> res;
+        vector<int> memo;
+        vector<int> vec;
+        for (int i = 1; i <= n; i++) vec.push_back(i);;
+        dfs(vec, k, 0, memo, res);
+        return res;
+    }
+};

@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int dx[4] = {-1, 0, 1, 0}, dy[4] = {0, -1, 0, 1};
+    bool dfs(vector<vector<char>>& board, int i, int j, string word, int index) {
+        if (board[i][j] != word[index]) return false;
+        if (index + 1 == word.size()) return true;
+        board[i][j] = '.';
+        int n = board.size(), m = board[0].size();
+        for (int d = 0; d < 4; d++) {
+            if (i + dx[d] < 0 || i + dx[d] >= n || j + dy[d] < 0 || j + dy[d] >= m) continue;
+            if (dfs(board, i + dx[d], j + dy[d], word, index + 1)) return true;
+        }
+        board[i][j] = word[index];
+        return false;
+    }
+
+    bool exist(vector<vector<char>>& board, string word) {
+        int n = board.size(), m = board[0].size();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (dfs(board, i, j, word, 0)) return true;
+            }
+        }
+        return false;
+    }
+};
