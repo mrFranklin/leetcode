@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        // 加入两个哨兵，写起来简单很多
+        heights.insert(heights.begin(), 0);
+        heights.push_back(0);
+        int n = heights.size();
+        int res = 0;
+        stack<int> st;
+        st.push(0);
+        for (int i = 1; i < n; i++) {
+            int j = st.top();
+            while (heights[j] > heights[i]) {
+                st.pop();
+                res = max(res, heights[j] * (i - st.top() - 1));
+                j = st.top();
+            }
+            st.push(i);
+        }
+        return res;
+    }
+};
