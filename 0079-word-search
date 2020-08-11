@@ -1,7 +1,7 @@
 class Solution {
 public:
     int dx[4] = {-1, 0, 1, 0}, dy[4] = {0, -1, 0, 1};
-    bool dfs(vector<vector<char>>& board, int i, int j, string word, int index) {
+    bool dfs(vector<vector<char>>& board, int i, int j, string& word, int index) {
         if (board[i][j] != word[index]) return false;
         if (index + 1 == word.size()) return true;
         board[i][j] = '.';
