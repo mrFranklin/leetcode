@@ -1,0 +1,48 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool equalTreeVal(TreeNode* left, TreeNode* right) {
+        if (left == NULL && right == NULL) return true;
+        else if (left == NULL || right == NULL) return false;
+        else if (left->val != right->val) return false;
+
+        return equalTreeVal(left->left, right->right) && equalTreeVal(left->right, right->left);
+    }
+
+    // 递归
+    bool isSymmetric1(TreeNode* root) {
+        if (root == NULL) return true;
+        return equalTreeVal(root->left, root->right);
+    }
+    // 迭代
+    bool isSymmetric1(TreeNode* root) {
+        if (root == NULL) return true;
+
+        vector<TreeNode*> q;
+        q.push_back(root);
+        while (!q.empty()) {
+            int n = q.size();
+            vector<TreeNode*> tmp;
+            for (int i = 0; i < n; i++) {
+                auto node1 = q[i], node2 = q[n - i - 1];
+                if (i < n / 2 + 1) {
+                    if (node1 == NULL && node2== NULL) continue;
+                    else if (node1 == NULL || node2 == NULL) return false;
+                    else if (node1->val != node2->val) return false;
+                }
+                if (node1 !=NULL)
+                    tmp.push_back(node1->left), tmp.push_back(node1->right);
+            }
+            q = tmp;
+        }
+        return true;
+    }
+};
