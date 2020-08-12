@@ -1,30 +1,20 @@
 class Solution {
 public:
-    // dfs
-    vector<vector<int>> search(vector<int>& nums, int n) {
-        vector<vector<int>> ans;
-        if (n == 0) {
-            ans.push_back(vector<int>());
-            return ans;
+
+    void dfs(vector<int>& nums, int start, vector<int>& memo, vector<vector<int>>& res) {
+        res.push_back(memo);
+
+        for (int i = start; i < nums.size(); i++) {
+            memo.push_back(nums[i]);
+            dfs(nums, i + 1, memo, res);
+            memo.pop_back();
         }
-        ans = search(nums, n-1);
-        int size = ans.size();
-        for (int i = 1; i < size; i++) {
-            vector<int> vec;
-            for (int j = 0; j < ans[i].size(); j++) {
-                vec.push_back(ans[i][j]);
-            }
-            vec.push_back(nums[n-1]);
-            ans.push_back(vec);
-        }
-        vector<int> vec;
-        vec.push_back(nums[n-1]);
-        ans.push_back(vec);
-        return ans;
     }
+
     vector<vector<int>> subsets(vector<int>& nums) {
-        vector<vector<int>> ans;
-        // if (nums.size() == 0) return ans;
-        return search(nums, nums.size());
+        vector<int> memo;
+        vector<vector<int>> res;
+        dfs(nums, 0, memo, res);
+        return res;
     }
 };
