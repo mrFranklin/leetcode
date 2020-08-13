@@ -1,0 +1,30 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* getTree(vector<int>& inorder, int il, int ir, vector<int>& postorder, int pl, int pr, unordered_map<int, int>& mp) {
+        // cout<<il<<" "<<ir<<" "<<pl<<" "<<pr<<endl;
+        if (il > ir) return NULL;
+        else if (il == ir) return new TreeNode(inorder[il]);
+        
+        auto root = new TreeNode(postorder[pr]);
+        int pos = mp[root->val];
+        root->left = getTree(inorder, il, pos - 1, postorder, pl, pl + pos - il - 1, mp);
+        root->right = getTree(inorder, pos + 1, ir, postorder, pl + pos - il, pr - 1, mp);
+        return root;
+    }
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        unordered_map<int, int> mp;
+        for (int i = 0; i < inorder.size(); i++) {
+            mp[inorder[i]] = i;
+        }
+        return getTree(inorder, 0, inorder.size() - 1, postorder, 0, postorder.size() - 1, mp);
+    }
+};
