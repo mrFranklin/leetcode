@@ -1,42 +1,25 @@
 class Solution {
 public:
-    string add(string num1, string num2, int count) {
-        // cout<<"----"<<num1<<" "<<num2<<endl;
-        if (num1.size() == 0) return "";
-        string res;
-        for (int i = 0; i < count; i++) res += num1[i];
-        int t = 0;
-        for (int i = 0; i < num2.size(); i++) {
-            int d = num2[i] - '0';
-            if (i < num1.size() - count) d += num1[i + count] - '0';
-            res += (d + t) % 10 + '0';
-            t = (d + t) / 10;
-        }
-        if (t > 0) res += t + '0';
-        return res;
-    }
-    // todo. 优化
     string multiply(string num1, string num2) {
-        string res;
-        int count = 0;
-        for (int i = num2.size() - 1; i >= 0; i--) {
-            int t = 0;
-            string s;
-            for (int j = num1.size() - 1; j >= 0; j--) {
-                int d = (num1[j] - '0') * (num2[i] - '0');
-                s += (d + t) % 10 + '0';
-                t = (d + t) / 10;
-                // cout<<">>>"<<d<<" "<<s<<" "<<t<<endl;
+        if (num1 == "0" || num2 == "0") return "0";
+        int n1 = num1.size(), n2 = num2.size();
+        string res(n1 + n2, '0');
+        for (int i = n1 - 1; i >= 0; i--) {
+            int t = 0, index = 0;
+            for (int j = n2 - 1; j >= 0; j--) {
+                int d = (num1[i] - '0') * (num2[j] - '0') + t;
+                t = d / 10;
+                d %= 10;
+                index = n2 - j + n1 - i - 2;
+                int dd = (res[index] - '0') + d;
+                t += dd / 10;
+                dd %= 10;
+                res[index] = dd + '0';
             }
-            if (t > 0) s += t + '0';
-            // cout<<"<<"<<s<<" "<<res <<endl;
-            if (res.size() == 0) res = s;
-            else res = add(res, s, count);
-            count++;
+            if (t > 0) res[index + 1] = t + '0';
         }
+        res.erase(res.find_last_not_of('0') + 1);
         reverse(res.begin(), res.end());
-        res.erase(0, res.find_first_not_of('0'));
-        if (res.size() == 0) res = "0";
         return res;
     }
 };
