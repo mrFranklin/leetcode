@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int maxProfit(int k, vector<int>& prices) {
+        int n = prices.size();
+        // 相当于无穷次交易
+        if (k >= n / 2) {
+            int res = 0;
+            for (int i = 1; i < n; i++) {
+                if (prices[i] > prices[i - 1]) {
+                    res = prices[i] - prices[i - 1];
+                }
+            }
+            return res;
+        }
+        vector<vector<int>> f(n + 1, vector<int>(k + 1, -10e8));
+        vector<vector<int>> g = f;
+        f[0][0] = 0;
+        int res = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= k; j++) { // 注意j=0的情况，为f初始化为0
+                f[i][j] = max(f[i - 1][j], g[i - 1][j] + prices[i - 1]);
+                g[i][j] = g[i - 1][j];
+                if (j > 0) {
+                    g[i][j] = max(g[i][j], f[i - 1][j - 1] - prices[i - 1]);
+                }
+                res = max(res, f[i][j]);
+            }
+        }
+        return res;
+    }
+};

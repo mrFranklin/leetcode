@@ -1,0 +1,77 @@
+class Solution {
+public:
+    // dp 二维
+    int maxProfit1(vector<int>& prices) {
+        int n = prices.size();
+        if (n == 0) return 0;
+        // 0: 持有现金(卖出)，1：持有股票（买入）
+        vector<vector<vector<int>>> f(n, vector<vector<int>>(3, vector<int>(2)));
+        f[0][0][0] = 0, f[0][0][1] = -prices[0], f[0][1][1] = INT_MIN;
+        for (int i = 1; i < n; i++) {
+            // 一直持有现金
+            f[i][0][0] = f[i - 1][0][0];
+            // 只买入一次股票
+            f[i][0][1] = max(f[i - 1][0][1], f[i - 1][0][0] - prices[i]);
+            // 第二次持有现金，卖出过一次股票
+            f[i][1][0] = max(f[i - 1][1][0], f[i - 1][0][1] + prices[i]);
+            // 第二次持有股票，持有过两次现金
+            f[i][1][1] = max(f[i - 1][1][1], f[i - 1][1][0] - prices[i]);
+            // 第三次持有现金，卖出过2次股票
+            f[i][2][0] = max(f[i - 1][2][0], f[i - 1][1][1] + prices[i]);
+            
+            // cout<<i<<" "<<f[i][0][0]<<" "<<f[i][0][1]<<" "<<f[i][1][0]<<" "<<f[i][1][1]<<" "<<f[i][2][0]<<endl;
+        }
+        return max(f[n - 1][1][0], f[n - 1][2][0]);
+    }
+    // dp 
+    int maxProfit2(vector<int>& prices) {
+        int n = prices.size();
+        if (n == 0) return 0;
+        // 0: 持有现金(卖出)，1：持有股票（买入）
+        // vector<vector<vector<int>>> f(n, vector<vector<int>>(3, vector<int>(2)));
+        // f：持有现金，g：持有股票
+        vector<int> f(3), g(3);
+        f[0] = 0; g[0] = -prices[0], g[1] = INT_MIN;
+        // f[0][0][0] = 0, f[0][0][1] = -prices[0], f[0][1][1] = INT_MIN;
+        for (int i = 1; i < n; i++) {
+            // 第三次持有现金，卖出过2次股票
+            // f[i][2][0] = max(f[i - 1][2][0], f[i - 1][1][1] + prices[i]);
+            f[2] = max(f[2], g[1] + prices[i]);
+            // 第二次持有股票，持有过两次现金
+            // f[i][1][1] = max(f[i - 1][1][1], f[i - 1][1][0] - prices[i]);
+            g[1] = max(g[1], f[1] - prices[i]);
+            // 第二次持有现金，卖出过一次股票
+            // f[i][1][0] = max(f[i - 1][1][0], f[i - 1][0][1] + prices[i]);
+            f[1] = max(f[1], g[0] + prices[i]);
+            // 只买入一次股票
+            // f[i][0][1] = max(f[i - 1][0][1], f[i - 1][0][0] - prices[i]);
+            g[0] = max(g[0], f[0] - prices[i]);
+            // 一直持有现金
+            // f[i][0][0] = f[i - 1][0][0];
+
+            // cout<<i<<" "<<f[i][0][0]<<" "<<f[i][0][1]<<" "<<f[i][1][0]<<" "<<f[i][1][1]<<" "<<f[i][2][0]<<endl;
+        }
+        // return max(f[n - 1][1][0], f[n - 1][2][0]);
+        return max(f[1], f[2]);
+    }
+
+    // 前后缀分解
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        if (n == 0) return 0;
+        vector<int> f(n);
+        int minp = prices[0];
+        for (int i = 1; i < n; i++) {
+            f[i] = max(f[i - 1], prices[i] - minp);
+            minp = min(minp, prices[i]);
+        }
+        int res = f[n - 1];
+        int maxp = prices[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            res = max(res, maxp - prices[i] + (i > 0 ? f[i - 1] : 0));
+            maxp = max(maxp, prices[i]);
+        }
+        
+        return res;
+    }
+};
