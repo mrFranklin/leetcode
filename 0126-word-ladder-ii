@@ -1,0 +1,155 @@
+class Solution {
+public:
+    bool oneDiff(string& s1, string& s2) {
+        int count = 0;
+        for (int i = 0; i < s1.size(); i++) {
+            if (s1[i] != s2[i]) count++;
+            if (count > 1) return false;
+        }
+        return count == 1;
+    }
+
+    
+    void dfs(string begin, string end, unordered_map<string, vector<string>>& mp, vector<string>& mem, 
+                vector<vector<string>>& res, unordered_map<string, bool>& vis) {
+        
+        if (begin == end) {
+            res.push_back(mem);
+            return;
+        }
+        vector<string> vec = mp[begin];
+        for (int i = 0; i < vec.size(); i++) {
+            string s = vec[i];
+            if (vis[s]) continue;
+            vis[s] = true;
+            mem.push_back(s);
+            dfs(s, end, mp, mem, res, vis);
+            vis[s] = false;
+            mem.pop_back();
+        }
+    }
+    
+    // dfs 超时
+    vector<vector<string>> findLadders1(string beginWord, string endWord, vector<string>& wordList) {
+        bool found = false;
+        for (int i = 0; i < wordList.size(); i++) {
+            if (endWord == wordList[i]) {
+                found = true; break;
+            }
+        }
+        if (!found) return {};
+        if (beginWord == endWord) return {};
+
+        unordered_map<string, vector<string>> mp;
+        // wordList.insert(wordList.begin(), beginWord);
+        int n = wordList.size();
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                string s1 = wordList[i], s2 = wordList[j];
+                if (oneDiff(s1, s2)) {
+                    if (!mp.count(s1)) mp[s1] = vector<string>();
+                    mp[s1].push_back(s2);
+                    if (!mp.count(s2)) mp[s2] = vector<string>();
+                    mp[s2].push_back(s1);
+                }
+            }
+        }
+        if (!mp.count(beginWord)) {
+            mp[beginWord] = vector<string>();
+            for (int i = 0; i < n; i++) {
+                if (oneDiff(beginWord, wordList[i])) {
+                    mp[beginWord].push_back(wordList[i]);
+                }
+            }
+        }
+
+        vector<vector<string>> res;
+        vector<string> mem;
+        unordered_map<string, bool> vis;
+        vis[beginWord] = true;
+        mem.push_back(beginWord);
+        dfs(beginWord, endWord, mp, mem, res, vis);
+
+        int count = INT_MAX;
+        for (int i = 0; i < res.size(); i++) {
+            if (count > res[i].size()) count = res[i].size();
+        }
+        vector<vector<string>> ans;
+        for (int i = 0; i < res.size(); i++) {
+            if (count == res[i].size()) ans.push_back(res[i]);
+        }
+
+        return ans;
+    }
+
+
+
+    unordered_map<string, vector<string>> graph;
+    vector<vector<string>> res;
+    vector<string> mem;
+    unordered_map<string, int> dist;
+    unordered_set<string> wordMap;
+
+    void dfs(string& beginWord, string& endWord) {
+        if (beginWord == endWord) {
+            res.push_back(mem);
+            return;
+        }
+        string s = beginWord;
+        for (int i = 0; i < s.size(); i++) {
+            s = beginWord;
+            for (char j = 'a'; j <= 'z'; j++) {
+                if (s[i] != j) {
+                    s[i] = j;
+                    if (wordMap.count(s) && dist[s] - 1 == dist[beginWord]) {
+                        mem.push_back(s);
+                        dfs(s, endWord);
+                        mem.pop_back();
+                    }
+                }
+            }
+        }
+    }
+
+    // bfs + dfs
+    vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {
+        int n = wordList.size();
+        for (int i = 0; i < n; i++) {
+            wordMap.insert(wordList[i]);
+        }
+        queue<string> q;
+        q.push(beginWord);
+        dist[beginWord] = 0;
+        bool found = false;
+        while (!q.empty() && !found) {
+            string s = q.front(); q.pop();
+            string ori = s;
+            for (int i = 0; i < s.size(); i++) {
+                s = ori;
+                for (char j = 'a'; j <= 'z'; j++) {
+                    if (s[i] != j) {
+                        s[i] = j;
+                        if (wordMap.count(s) && !dist.count(s)) {
+                            dist[s] = dist[ori] + 1;
+                            if (s == endWord) {
+                                found = true; break;
+                            }
+                            q.push(s);
+                        }
+                    }
+                }
+                if (found) break;
+            }
+            if (found) break;
+        }
+        
+        if (dist.count(endWord)) {
+            mem.push_back(beginWord);
+            dfs(beginWord, endWord);
+        }
+        
+        // mem.push_back(endWord);
+        // dfs2(beginWord, endWord);
+        return res;
+    }
+};
