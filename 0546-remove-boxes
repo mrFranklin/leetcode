@@ -1,0 +1,92 @@
+class Solution {
+public:
+    int hash(vector<int>& vec) {
+        std::size_t seed = vec.size();
+        for(auto& i : vec) {
+            seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+        return seed;
+    }
+    
+    int dfs(vector<int>& boxes, unordered_map<int, int>& mp) {
+        int n = boxes.size();
+        if (n == 0) return 0;
+        else if (n == 1) return 1;
+
+        int h = hash(boxes);
+        if (mp.count(h)) return mp[h];
+
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int count = 1;
+            while (i < n - 1 && boxes[i] == boxes[i + 1]) {
+                count++, i++;
+            }
+            vector<int> vec;
+            for (int j = 0; j < i - count + 1; j++) {
+                vec.push_back(boxes[j]);
+            }
+            for (int j = i + 1; j < n; j++) {
+                vec.push_back(boxes[j]);
+            }
+            res = max(res, count * count + dfs(vec, mp));
+        }
+        mp[h] = res;
+        return res;
+    }
+
+    // dfs+记忆化，超时
+    int removeBoxes1(vector<int>& boxes) {
+        int n = boxes.size();
+        if (n == 0) return 0;
+        unordered_map<int, int> mp;
+        int res = 0, score = 0;
+        return dfs(boxes, mp);
+    }
+    
+    int dp(vector<int>& boxes, int l, int r, int k, vector<vector<vector<int>>>& f) {
+        if (l > r) return 0;
+        if (f[l][r][k] > 0) return f[l][r][k];
+
+        while (l < r && boxes[r] == boxes[r - 1]) {
+            r--;
+            k++;
+        }
+        f[l][r][k] = dp(boxes, l, r - 1, 0, f) + (k + 1) * (k + 1);
+        for (int i = l; i < r; i++) {
+            if (boxes[i] == boxes[r]) {
+                f[l][r][k] = max(f[l][r][k], dp(boxes, i + 1, r - 1, 0, f) + dp(boxes, l, i, k + 1, f));
+            }
+        }
+        return f[l][r][k];
+    }
+    // dp 递归
+    int removeBoxes2(vector<int>& boxes) {
+        // f[i][j][k] 从i到j，有k个与boxex[j]相同元素的最大积分
+        int n = boxes.size();
+        vector<vector<vector<int>>> f(n, vector<vector<int>>(n, vector<int>(n)));
+        return dp(boxes, 0, n - 1, 0, f);
+    }
+
+    // dp 非递归
+    int removeBoxes(vector<int>& boxes) {
+        int n = boxes.size();
+        vector<vector<vector<int>>> f(n, vector<vector<int>>(n, vector<int>(n + 1)));
+        
+        for (int len = 1; len <= n; len++) {
+            for (int i = 0; i + len - 1 < n; i++) {
+                int j = i + len - 1;
+                for (int k = 0; k < n - j; k++) {
+                    f[i][j][k] = (j - 1 >= i ? f[i][j - 1][0] : 0) + (k + 1) * (k + 1);
+                    for (int t = i; t < j; t++) {
+                        if (boxes[t] == boxes[j]) {
+                            f[i][j][k] = max(f[i][j][k], (t + 1 < j ? f[t + 1][j - 1][0] : 0) + f[i][t][k + 1]);
+                        }
+                    }
+                }
+            }
+        }
+
+        return f[0][n - 1][0];
+    }
+};
