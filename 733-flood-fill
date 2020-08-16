@@ -1,0 +1,32 @@
+struct Point {
+    int x;
+    int y;
+    Point(int x, int y) {
+        this->x = x;
+        this->y = y;
+    }
+};
+
+class Solution {
+public:
+    int dx[4] = {-1, 0, 1, 0};
+    int dy[4] = {0, 1, 0, -1};
+    vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int newColor) {
+        if (image.size() == 0 || image[sr][sc] == newColor) return image;
+        int n = image.size(), m = image[0].size();
+        queue<Point> q;
+        q.push(Point(sr, sc));
+        int ori = image[sr][sc];
+        while (!q.empty()) {
+            Point p = q.front(); q.pop();
+            image[p.x][p.y] = newColor;
+            for (int i = 0; i < 4; i++) {
+                int x = p.x + dx[i], y = p.y + dy[i];
+                if (x >= 0 && x < n && y >= 0 && y < m && image[x][y] == ori) {
+                    q.push(Point(x, y));
+                }
+            }
+        }
+        return image;
+    }
+};
