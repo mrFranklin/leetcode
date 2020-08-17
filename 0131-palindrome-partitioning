@@ -1,0 +1,31 @@
+class Solution {
+public:
+    bool check(string s, int l, int r) {
+        for (int i = l; i <= (l + r) / 2; i++) {
+            if (s[i] != s[l + r - i]) return false;
+        }
+        return true;
+    }
+
+    void dfs(string& s, int start, vector<string>& mem, vector<vector<string>>& res) {
+        int n = s.size();
+        if (start == n) {
+            res.push_back(mem);
+            return;
+        }
+        for (int i = start; i < n; i++) {
+            if (check(s, start, i)) {
+                mem.push_back(s.substr(start, i - start + 1));
+                dfs(s, i + 1, mem, res);
+                mem.pop_back();
+            }
+        }
+    }
+
+    vector<vector<string>> partition(string s) {
+        vector<vector<string>> res;
+        vector<string> mem;
+        dfs(s, 0, mem, res);
+        return res;
+    }
+};

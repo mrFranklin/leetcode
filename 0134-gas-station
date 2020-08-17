@@ -1,0 +1,39 @@
+class Solution {
+public:
+    // O(n^2) 
+    int canCompleteCircuit1(vector<int>& gas, vector<int>& cost) {
+        int n = gas.size();
+        vector<int> left(n);
+        for (int i = 0; i < n; i++) {
+            left[i] = gas[i] - cost[i];
+        }
+        for (int i = 0; i < n; i++) {
+            int cnt = 0, sum = 0;
+            while (cnt < n) {
+                sum += left[(i + cnt + n) % n];
+                if (sum < 0) break;
+                cnt++;
+            }
+            if (cnt == n) return i;
+        }
+        return -1;
+    }
+
+    // O(n)
+    int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+        int n = gas.size();
+        int cnt = 0, sum = 0, st = 0;
+        while (cnt < n && st < n) {
+            int cur = st + cnt;
+            sum += gas[cur % n] - cost[cur % n];
+            if (sum < 0) {
+                st = cur + 1;
+                sum = 0;
+                cnt = 0;
+            } else {
+                cnt++;
+            }
+        }
+        return st >= n ? -1 : st;
+    }
+};

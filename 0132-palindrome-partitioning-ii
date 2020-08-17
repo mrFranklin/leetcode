@@ -1,0 +1,45 @@
+struct Node {
+    int l, r;
+    Node(int l, int r) {
+        this->l = l, this->r = r;
+    }
+};
+
+class Solution {
+public:
+    bool check(string& s, int l, int r) {
+        for (int i = l; i <= r / 2; i++) {
+            if (s[i] != s[r - l + i]) return false;
+        }
+        return true;
+    }
+
+    int minCut(string s) {
+        int n = s.size();
+        vector<int> f(n);
+
+        vector<vector<bool>> mp(n, vector<bool>(n, true));
+        for (int len = 1; len <= n; len++) {
+            for (int i = 0; i + len - 1 < n; i++) {
+                int j = i + len - 1;
+                if (i == n - 1) mp[i][j] = true;
+                else if (j == 0) mp[i][j] = true;
+                else mp[i][j] = s[i] == s[j] && mp[i + 1][j - 1];
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            f[i] = i;
+            for (int j = 0; j < i; j++) {
+                // if (check(s, 0, r)) {
+                if (mp[0][i]) {
+                    f[i] = 0;
+                    continue;
+                }
+                if (mp[j + 1][i]) {
+                    f[i] = min(f[i], f[j] + 1);
+                }
+            }
+        }
+        return f[n - 1];
+    }
+};
