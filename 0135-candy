@@ -1,0 +1,52 @@
+class Solution {
+public:
+    // 两次遍历，取最大值
+    int candy1(vector<int>& ratings) {
+        int n = ratings.size();
+        vector<int> left(n);
+        int res = 0;
+        int num = 1;
+        left[0] = 1;
+        for (int i = 0; i < n; i++) {
+            if (i > 0 && ratings[i] > ratings[i - 1]) {
+                ++num;
+            } else {
+                num = 1;
+            }
+            left[i] = num;
+
+        }
+        num = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            if (i + 1 < n && ratings[i + 1] < ratings[i]) {
+                ++num;
+            } else {
+                num = 1;
+            }
+            res += max(left[i], num);
+        }
+        return res;
+    }
+
+    int cnt = 0;
+    int dfs(vector<int>& ratings, int i, vector<int>& f) {
+        if (f[i] != 0) return f[i];
+        int n = ratings.size();
+        f[i] = 1;
+        if (i < n - 1 && ratings[i] > ratings[i + 1]) f[i] = max(f[i], dfs(ratings, i + 1, f) + 1);
+        if (i > 0 && ratings[i] > ratings[i - 1]) f[i] = max(f[i], dfs(ratings, i - 1, f) + 1);
+        return f[i];
+    }
+
+    // 记忆化搜索 dfs
+    int candy(vector<int>& ratings) {
+        int n = ratings.size();
+        vector<int> f(n);
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res += dfs(ratings, i, f);
+        }
+        // cout<<cnt<<endl;
+        return res;
+    }
+};
