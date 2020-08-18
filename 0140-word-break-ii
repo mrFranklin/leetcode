@@ -1,0 +1,40 @@
+class Solution {
+public:
+    unordered_set<string> ws;
+    // dp
+    vector<string> wordBreak(string s, vector<string>& wordDict) {
+        int n = wordDict.size(), m = s.size();
+        for (int i = 0; i < n; i++) {
+            ws.insert(wordDict[i]);
+        }
+        vector<vector<string>> res(m);
+        vector<bool> f(m);
+        for (int i = 0; i < m; i++) {
+            string ss = s.substr(0, i + 1);
+            f[i] = ws.count(ss);
+            if (f[i]) continue;
+            for (int j = 0; j < i; j++) {
+                ss = s.substr(j + 1, i - j);
+                f[i] = f[j] && ws.count(ss);
+                if (f[i]) break;
+            }
+        }
+        if (!f[m - 1]) return {};  // 需要提前判断，否则超时！ 蛋疼的题目~
+
+        for (int i = 0; i < m; i++) {
+            string ss = s.substr(0, i + 1);
+            f[i] = ws.count(ss);
+            if (f[i]) res[i].push_back(ss);
+            for (int j = 0; j < i; j++) {
+                ss = s.substr(j + 1, i - j);
+                f[i] = f[i] || f[j] && ws.count(ss);
+                if (f[j] && ws.count(ss)) {
+                    for (int k = 0; k < res[j].size(); k++) {
+                        res[i].push_back(res[j][k] + " " + ss);
+                    }
+                }
+            }
+        }
+        return res[m - 1];
+    }
+};

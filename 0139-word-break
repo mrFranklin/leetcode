@@ -1,0 +1,65 @@
+class Solution {
+public:
+    vector<vector<int>> cache;
+    unordered_set<string> ws;
+    bool dfs(string& s, int st, int ed) {
+        if (st > ed) return true;
+        if (cache[st][ed] != -1) return cache[st][ed];
+
+        bool found = false;
+        for (int i = st; i <= ed; i++) {
+            if (cache[st][i] != -1) {
+                if (cache[st][i] == 1) {
+                    if (dfs(s, i + 1, ed)) {
+                        found = true;
+                        break;
+                    }
+                } else {
+                    continue;
+                }
+            } else {
+                string cur = s.substr(st, i - st + 1);
+                if (ws.count(cur)) {
+                    cache[st][i] = 1;
+                    if (dfs(s, i + 1, ed)) {
+                        found = true;
+                        break;
+                    }
+                } else {
+                    cache[st][i] = 0;
+                }
+            }
+        }
+        cache[st][ed] = found ? 1 : 0;
+        return found;
+    }
+
+    // 记忆化dfs
+    bool wordBreak1(string s, vector<string>& wordDict) {
+        int n = wordDict.size(), m = s.size();
+        for (int i = 0; i < n; i++) {
+            ws.insert(wordDict[i]);
+        }
+        cache.resize(m, vector<int>(m, -1));
+        return dfs(s, 0, m - 1);
+    }
+
+    // dp
+    bool wordBreak(string s, vector<string>& wordDict) {
+        int n = wordDict.size(), m = s.size();
+        for (int i = 0; i < n; i++) {
+            ws.insert(wordDict[i]);
+        }
+        vector<bool> f(m);
+        for (int i = 0; i < m; i++) {
+            f[i] = ws.count(s.substr(0, i + 1));
+            if (f[i]) continue;
+            for (int j = 0; j < i; j++) {
+                string ss = s.substr(j + 1, i - j);
+                f[i] = f[j] && ws.count(ss);
+                if (f[i]) break;
+            }
+        }
+        return f[m - 1];
+    }
+};

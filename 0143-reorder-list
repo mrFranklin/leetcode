@@ -1,0 +1,57 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    // 递归 比较慢
+    void reorderList1(ListNode* head) {
+        if (head == nullptr || head->next == nullptr || head->next->next == nullptr) return;
+        ListNode* p = head, *pre = nullptr;
+        while (p->next != nullptr) {
+            pre = p;
+            p = p->next;
+        }
+        pre->next = nullptr;
+        p->next = head->next;
+        head->next = p;
+        reorderList(p->next);
+    }
+
+    ListNode* reverseList(ListNode* head) {
+        ListNode* p = head, *pre = nullptr;
+        while (p != nullptr) {
+            ListNode* tmp = p->next;
+            p->next = pre;
+            pre = p;
+            p = tmp;
+        }
+        return pre;
+    }
+
+    // 迭代
+    void reorderList(ListNode* head) {
+        if (head == nullptr) return;
+        ListNode* slow = head, *fast = head;
+        while (fast && fast->next) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        auto h2 = reverseList(slow->next);
+        slow->next = nullptr;
+        ListNode* h1 = head;
+        while (h1 && h2) {
+            ListNode* tmp1 = h1->next, *tmp2 = h2->next;
+            h1->next = h2;
+            h2->next = tmp1;
+            h1 = tmp1;
+            h2 = tmp2;
+        }
+    }
+};
