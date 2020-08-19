@@ -1,0 +1,48 @@
+/**
+ * The read4 API is defined in the parent class Reader4.
+ *     int read4(char *buf);
+ */
+
+class Solution {
+private:
+    int readed = 0;
+    int size = 0;
+    char cache[4];
+public:
+    /**
+     * @param buf Destination buffer
+     * @param n   Number of characters to read
+     * @return    The number of actual characters read
+     */
+    int read(char *buf, int n) {
+        char buf4[4];
+        
+        int cnt = 0;
+        if (size > 0) {
+            if (size <= n) {
+                memcpy(buf, cache + readed, size);
+                cnt += size;
+                readed = 0;
+                size = 0;
+            } else {
+                memcpy(buf, cache + readed, n);
+                readed += n;
+                size -= n;
+                return n;
+            }
+        }
+        while (cnt < n) {
+            int len = read4(buf4);
+            if (len == 0) break;
+            if (cnt + len > n) {
+                size = cnt + len - n;
+                readed = 0;
+                memcpy(cache, buf4 + (n - cnt), size);
+                len = n - cnt;
+            }
+            memcpy(buf + cnt, buf4, len);
+            cnt += len;
+        }
+        return cnt;
+    }
+};
