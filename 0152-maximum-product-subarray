@@ -1,0 +1,49 @@
+class Solution {
+public:
+    // 超时，考虑优化，观察特点
+    int maxProduct1(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 0) return 0;
+        vector<vector<int>> f(n, vector<int>(n, 1));
+        int res = INT_MIN;
+        for (int len = 1; len <= n; len++) {
+            for (int i = 0; i + len - 1 < n; i++) {
+                int j = i + len - 1;
+                f[i][j] = (j > 0 ? f[i][j - 1] : 1) * nums[j];
+                res = max(res, f[i][j]);
+            }
+        }
+        return res;
+    }
+
+    int maxProduct2(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 0) return 0;
+        vector<int> f(n), g(n);
+        int res = INT_MIN;
+        for (int i = 0; i < n; i++) {
+            f[i] = nums[i], g[i] = nums[i];
+            if (i > 0) {
+                f[i] = max(f[i], max(f[i - 1] * nums[i], g[i - 1] * nums[i]));
+                g[i] = min(g[i], min(g[i - 1] * nums[i], f[i - 1] * nums[i]));
+            }
+            res = max(res, f[i]);
+        }
+        return res;
+    }
+    // 优化空间复杂度
+    int maxProduct(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 0) return 0;
+        int f, g;
+        int res = nums[0];
+        f = nums[0], g = nums[0];
+        for (int i = 1; i < n; i++) {
+            int a = f * nums[i], b = g * nums[i];
+            f = max(nums[i], max(a, b));
+            g = min(nums[i], min(a, b));
+            res = max(res, f);
+        }
+        return res;
+    }
+};

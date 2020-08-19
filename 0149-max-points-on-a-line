@@ -1,0 +1,27 @@
+# define ld long double
+
+class Solution {
+public:    
+    int maxPoints(vector<vector<int>>& points) {
+        int n = points.size();
+        int res = 0;
+        for (auto& p : points) {
+            unordered_map<ld, int> mp;
+            int vcnt = 0, ocnt = 0;
+            for (auto& q : points) {
+                if (p == q) ocnt++;
+                else if (p[0] == q[0]) vcnt++;
+                else {
+                    ld kb = (ld)(p[1] - q[1]) / (p[0] - q[0]);
+                    mp[kb]++;
+                }
+            }
+            int cnt = vcnt;
+            for (auto& [k, v] : mp) {
+                cnt = max(cnt, v);
+            }
+            res = max(res, cnt + ocnt);
+        }
+        return res;
+    }
+};
