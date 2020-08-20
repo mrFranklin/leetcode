@@ -1,0 +1,86 @@
+class Solution {
+public:
+    bool isDigit(char ch) {
+        return ch >= '1' && ch <= '8';
+    }
+
+    vector<vector<bool>> vis;
+    int n, m;
+    int dx[8] = {-1, 1, 0, 0, -1, -1, 1, 1}, dy[8] = {0, 0, -1, 1, -1, 1, -1, 1};
+    
+    void dfs(vector<vector<char>>& board, int x, int y) {
+        if (x < 0 || x >= n || y < 0 || y >= m) return;
+        if (vis[x][y]) return;
+        vis[x][y] = true;
+        if (board[x][y] == 'M') return;
+
+        int cnt = 0;
+        for (int i = 0; i < 8; i++) {
+            int a = x + dx[i], b = y + dy[i];
+            if (a < 0 || a >= n || b < 0 || b >= m) continue;
+            if (board[a][b] == 'M') cnt++;
+        }
+        if (cnt > 0) board[x][y] = '0' + cnt;
+        else {
+            board[x][y] = 'B';
+            for (int i = 0; i < 8; i++) {
+                dfs(board, x + dx[i], y + dy[i]);
+            }
+        };
+    }
+
+    // dfs
+    vector<vector<char>> updateBoard1(vector<vector<char>>& board, vector<int>& click) {
+        int x = click[0], y = click[1];
+        if (board[x][y] == 'M') {
+            board[x][y] = 'X';
+            return board;
+        }
+        
+        n = board.size(), m = board[0].size();
+        vis.resize(n, vector<bool>(m));
+        dfs(board, x, y);
+        return board;
+    }
+    
+    struct Point {
+        int x, y;
+        Point(int x, int y) {
+            this->x = x, this->y = y;
+        }
+    };
+    // bfs
+    vector<vector<char>> updateBoard(vector<vector<char>>& board, vector<int>& click) {
+        int x = click[0], y = click[1];
+        if (board[x][y] == 'M') {
+            board[x][y] = 'X';
+            return board;
+        }
+        n = board.size(), m = board[0].size();
+        vis.resize(n, vector<bool>(m));
+
+        queue<Point> q;
+        q.push(Point(x, y));
+        while (!q.empty()) {
+            Point pt = q.front(); q.pop();
+            if (vis[pt.x][pt.y]) continue;
+            vis[pt.x][pt.y] = true;
+            int cnt = 0;
+            for (int i = 0; i < 8; i++) {
+                int a = pt.x + dx[i], b = pt.y + dy[i];
+                if (a < 0 || a >= n || b < 0 || b >= m) continue;
+                if (board[a][b] == 'M') cnt++;
+            }
+            if (cnt > 0) board[pt.x][pt.y] = '0' + cnt;
+            else {
+                board[pt.x][pt.y] = 'B';
+                for (int i = 0; i < 8; i++) {
+                    int a = pt.x + dx[i], b = pt.y + dy[i];
+                    if (a < 0 || a >= n || b < 0 || b >= m) continue;
+                    if (board[a][b] != 'M') q.push(Point(a, b));
+                }
+            }
+        }
+        return board;
+    }
+};
