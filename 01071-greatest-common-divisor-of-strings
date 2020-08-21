@@ -1,0 +1,51 @@
+class Solution {
+public:
+    string gcd(string str1, string str2) {
+        int n = str2.size(), m = str1.size();
+        if (n == 0) return str1;
+        int cnt = 0;
+        while (cnt < m / n * n) {
+            for (int i = 0; i < n; i++) {
+                if (str1[cnt++] != str2[i]) return "";
+            }
+        }
+        return gcd(str2, str1.substr(cnt, m - cnt));
+    }
+
+    // 递归
+    string gcdOfStrings1(string str1, string str2) {
+        if (str1.size() < str2.size()) {
+            string s = str1;
+            str1 = str2;
+            str2 = s;
+        }
+        return gcd(str1, str2);
+    }
+
+    // 迭代
+    string gcdOfStrings2(string str1, string str2) {
+        if (str1.size() < str2.size()) {
+            string s = str1;
+            str1 = str2;
+            str2 = s;
+        }
+        while (str2.size() > 0) {
+            int cnt = 0, m = str1.size(), n = str2.size();
+            while (cnt < m / n * n) {
+                for (int i = 0; i < n; i++) {
+                    if (str1[cnt++] != str2[i]) return "";
+                }
+            }
+            string s = str1;
+            str1 = str2;
+            str2 = s.substr(cnt, s.size() - cnt);
+        }
+        return str1;
+    }
+
+    // 更简单的方式
+    string gcdOfStrings(string str1, string str2) {
+        if (str1 + str2 != str2 + str1) return "";
+        return str1.substr(0, __gcd(str1.size(), str2.size()));
+    }
+};
