@@ -1,0 +1,20 @@
+class Solution {
+public:
+    void rotate1(vector<int>& nums, int k) {
+        int n = nums.size();
+        k %= n;
+        while (k-- > 0) {
+            nums.insert(nums.begin(), nums.back());
+            nums.pop_back();
+        }
+    }
+
+    // 2次翻转
+    void rotate(vector<int>& nums, int k) {
+        int n = nums.size();
+        k %= n;
+        reverse(nums.begin(), nums.end());
+        reverse(nums.begin(), nums.begin() + k);
+        reverse(nums.begin() + k, nums.end());
+    }
+};
