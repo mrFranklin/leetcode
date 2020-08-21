@@ -2,30 +2,28 @@ class Solution {
 public:
     int maxProfit(int k, vector<int>& prices) {
         int n = prices.size();
-        // 相当于无穷次交易
+        if (k <= 0 || n <= 0) return 0;
+        int res = 0;
+        // 特判~
         if (k >= n / 2) {
-            int res = 0;
             for (int i = 1; i < n; i++) {
                 if (prices[i] > prices[i - 1]) {
-                    res = prices[i] - prices[i - 1];
+                    res += prices[i] - prices[i - 1];
                 }
             }
             return res;
-        }
-        vector<vector<int>> f(n + 1, vector<int>(k + 1, -10e8));
-        vector<vector<int>> g = f;
-        f[0][0] = 0;
-        int res = 0;
-        for (int i = 1; i <= n; i++) {
-            for (int j = 0; j <= k; j++) { // 注意j=0的情况，为f初始化为0
+        };
+        // f：持有现金，g：持有股票
+        vector<vector<int>> f(n + 1, vector<int>(k + 1)), g(n + 1, vector<int>(k + 1, INT_MIN));
+        g[0][1] = 0 - prices[0];
+        for (int j = 1; j <= k; j++) {
+            for (int i = 1; i <= n; i++) {
                 f[i][j] = max(f[i - 1][j], g[i - 1][j] + prices[i - 1]);
-                g[i][j] = g[i - 1][j];
-                if (j > 0) {
-                    g[i][j] = max(g[i][j], f[i - 1][j - 1] - prices[i - 1]);
-                }
+                g[i][j] = max(g[i - 1][j], f[i - 1][j - 1] - prices[i - 1]);
                 res = max(res, f[i][j]);
             }
         }
+
         return res;
     }
 };
