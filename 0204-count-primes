@@ -1,65 +1,18 @@
-/*
-我们知道每一个大于 1 的整数都一定是质数的乘积来表示，如 10=2*5。现在请设计一个程序，对于给定的一个(1, N]之间的正整数（N取值不超过10万），你需要统计(1,N]之间所有整数的因数分解后，所有质数个数的总个数。举例，输入数据为6，那么满足(1,6]的整数位2,3,4,5,6,，各自进行质数分解后为：2=>2，3=>3，4=>2*2，5=>5，6=>2*3。对应的质数个数即为1，1，2，1，2。最后统计总数为7
-数据范围：n不超过10万
-
-解析：
-
-问题相当于 n!n! 分解后有多少个素因子
-
-方法一：
-素数筛法，枚举所有的素数，分别统计 n!n! 分解后有多少个素数 p，复杂度是 o(nlogn)o(nlogn)
-
-方法二：
-素数筛法，素数筛选中，可以顺便把素数的个数求出来，复杂度是 o(nlognlogn)o(nlognlogn)
-
-
-int num[N];
-int ret = 0;
-for (int i = 1;i < N;i++) {
-    num[i] = i;
-}
-for (int i = 2;i < N;i++) {
-    if (num[i] == 1) {
-        continue;
-    }
-    for (int j = i;j < N;j += i) {
-        while (nums[j] % i == 0) {
-            ret++;
-            nums[j] /= i;
-        }
-    }
-}
-
-作者：小白二号
-链接：https://leetcode-cn.com/circle/article/vXtCiY/
-来源：力扣（LeetCode）
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
-*/
-
 class Solution {
 public:
     int countPrimes(int n) {
-        if (n <= 2) {
-            return 0;
+        vector<int> v(n, true);
+        for (int i = 2; i * i < n; i++) {
+            if (!v[i]) continue;
+            for (int j = i * i; j < n; j += i) {
+                v[j] = false;
+            }
         }
-        bool isprime[n];
-        memset(isprime, true, sizeof(isprime));
-        vector<int> primes;
+        int res = 0;
         for (int i = 2; i < n; i++) {
-            if (isprime[i]) {
-                primes.push_back(i);
-            }
-            for (int j = 0; j < primes.size(); j++) {
-                int x = i * primes[j];
-                if (x >= n) {
-                    break;
-                }
-                isprime[i * primes[j]] = false;
-                if (i % primes[j] == 0) {
-                    break;
-                }
-            }
+            if (v[i]) res++;
         }
-        return primes.size();
+
+        return res;
     }
 };
