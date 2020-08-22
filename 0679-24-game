@@ -1,0 +1,67 @@
+class Solution {
+public:
+    int n;
+    vector<int> memo;
+    vector<double> dfs(vector<int>& nums, int st, int ed) {
+        if (st >= ed) return {(double)nums[st]};
+        vector<double> res;
+        for (int i = st; i < ed; i++) {
+            vector<double> v1 = dfs(nums, st, i);
+            vector<double> v2 = dfs(nums, i + 1, ed);
+            for (double a : v1) {
+                for (double b : v2) {
+                    for (int i = 0; i < 4; i++) {
+                        res.push_back(ops(a, b, i));
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    double ops(double a, double b, int op) {
+        if (op == 0) return a + b;
+        if (op == 1) return a - b;
+        if (op == 2) return a * b;
+        if (op == 3) return a / b;
+        return 0;
+    }
+
+    bool equals(double a, double b, double target) {
+        if (abs(a + b - target) <= 0.001 || abs(a - b - target) <= 0.001 || abs(a * b - target) <= 0.0001 || abs(a / b - target) <= 0.0001) return true;
+        return false;
+    }
+
+    void assign(vector<int>& nums, int st, vector<int>& memo, vector<vector<int>>& res) {
+        if (st >= n) {
+            res.push_back(memo);
+            return;
+        }
+        for (int i = st; i < n; i++) {
+            if (i > st && nums[i] == nums[st]) continue;
+            swap(nums[i], nums[st]);
+            memo.push_back(nums[st]);
+            assign(nums, st + 1, memo, res);
+            memo.pop_back();
+            swap(nums[i], nums[st]);
+        }
+    }
+
+    bool judgePoint24(vector<int>& nums) {
+        n = nums.size();
+        vector<vector<int>> all;
+        assign(nums, 0, memo, all);
+        for (int j = 0; j < all.size(); j++) {
+            for (int i = 0; i < n - 1; i++) {
+                vector<double> v1 = dfs(all[j], 0, i);
+                vector<double> v2 = dfs(all[j], i + 1, n - 1);
+                for (double a : v1) {
+                    for (double b : v2) {
+                        if (equals(a, b, 24)) return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+};
