@@ -47,7 +47,7 @@ public:
         }
     }
 
-    bool judgePoint24(vector<int>& nums) {
+    bool judgePoint241(vector<int>& nums) {
         n = nums.size();
         vector<vector<int>> all;
         assign(nums, 0, memo, all);
@@ -59,6 +59,47 @@ public:
                     for (double b : v2) {
                         if (equals(a, b, 24)) return true;
                     }
+                }
+            }
+        }
+        return false;
+    }
+
+    double ops6(double a, double b, int op) {
+        if (op == 0) return a + b;
+        if (op == 1) return a - b;
+        if (op == 2) return b - a;
+        if (op == 3) return a * b;
+        if (op == 4) return a / b;
+        if (op == 5) return b / a;
+        return 0;
+    }
+
+    // 更简洁写法
+    bool judgePoint24(vector<int>& nums) {
+        vector<double> dnums;
+        for (auto num : nums) {
+            dnums.push_back(num);
+        }
+        return judge(dnums);
+    }
+    bool judge(vector<double>& nums) {
+        int m = nums.size();
+        if (m == 1) {
+            return fabs(nums[0] - 24) <= 0.000006;
+        }
+        for (int i = 0; i < m - 1; i++) {
+            for (int j = i + 1; j < m; j++) {
+                // 枚举6种情况, 不断缩小范围
+                vector<double> v;
+                for (int k = 0; k < 6; k++) {
+                    v.push_back(ops6(nums[i], nums[j], k));
+                    for (int t = 0; t < m; t++) {
+                        if (t == i || t == j) continue;
+                        v.push_back(nums[t]);
+                    }
+                    if (judge(v)) return true;
+                    v.clear();
                 }
             }
         }
