@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int n;
+    vector<int> mem;
+    
+    void dfs(vector<int>& nums, int st, int target, vector<int>& mem, vector<vector<int>>& res) {
+        if (mem.size() > 1) res.push_back(mem);
+        if (st >= n) return;
+        unordered_set<int> vis;
+        for (int i = st; i < n; i++) {
+            if (vis.count(nums[i])) continue;
+            vis.insert(nums[i]);
+            if (nums[i] >= target) {
+                mem.push_back(nums[i]);
+                dfs(nums, i + 1, nums[i], mem, res);
+                mem.pop_back();
+            }
+        }
+    }
+
+    vector<vector<int>> findSubsequences(vector<int>& nums) {
+        n = nums.size();
+        vector<vector<int>> res;
+        dfs(nums, 0, INT_MIN, mem, res);
+        return res;
+    }
+};
