@@ -1,0 +1,23 @@
+class Solution {
+public:
+    unordered_map<string, priority_queue<string, vector<string>, greater<string>>> adjs;
+    vector<string> res;
+    
+    void dfs(string& s) {
+        while (adjs.count(s) && adjs[s].size() > 0) {
+            auto ss = adjs[s].top(); adjs[s].pop();
+            dfs(ss);
+        }
+        res.push_back(s);
+    }
+
+    vector<string> findItinerary(vector<vector<string>>& tickets) {
+        string s = "JFK";
+        for (auto& v : tickets) {
+            adjs[v[0]].push(v[1]);
+        }
+        dfs(s);
+        reverse(res.begin(), res.end());
+        return res;
+    }
+};
