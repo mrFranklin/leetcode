@@ -1,0 +1,60 @@
+class Solution {
+public:
+    const static int MAXN = 100005;
+    int par[MAXN], sz[MAXN], cnt[MAXN], b[MAXN];
+    int n;
+    
+    // 从后往前遍历，利用set的有序性，时间复杂度较高
+    int findLatestStep1(vector<int>& arr, int m) {
+        n = arr.size();
+        if (n == m) return n;
+        set<int> st;
+        st.insert(0), st.insert(n + 1);
+        for (int i = n - 1; i >= 0; i--) {
+            auto it = st.upper_bound(arr[i]);
+            int r = *it;
+            int l = *prev(it);
+            if (arr[i] - 1 - l == m || r - arr[i] - 1 == m) return i;
+            st.insert(arr[i]);
+        }
+        return -1;
+    }
+
+    int find(int x) {
+        return x == par[x] ? x : par[x] = find(par[x]);
+    }
+
+    void merge(int x, int y) {
+        x = find(x), y = find(y);
+        if (x == y) return;
+        cnt[sz[x]]--;
+        cnt[sz[y]]--;
+        par[x] = y;
+        sz[y] += sz[x];
+        cnt[sz[y]]++;
+    }
+
+    // 并查集
+    int findLatestStep(vector<int>& arr, int m) {
+        n = arr.size();
+        // if (n == m) return n;
+
+        for (int i = 0; i < n; i++) {
+            par[i] = i, sz[i] = 1;
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int t = arr[i];
+            b[t] = 1;
+            cnt[1]++;
+            if (b[t - 1] == 1) {
+                merge(t, t - 1);
+            }
+            if (b[t + 1] == 1) {
+                merge(t, t + 1);
+            }
+            if (cnt[m] > 0) res = i + 1;
+        }
+        return res == 0 ? -1 : res;
+    }
+};
