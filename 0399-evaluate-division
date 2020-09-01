@@ -1,0 +1,134 @@
+struct Node {
+    string s;
+    double d;
+    Node(string s, double d) {
+        this->s = s, this->d = d;
+    }
+};
+
+class Solution {
+public:
+    unordered_map<string, Node*> par;
+
+    Node* find(string x) {
+        if (x != par[x]->s) {
+            auto nd = find(par[x]->s);
+            par[x] = new Node(nd->s, nd->d * par[x]->d);
+        }
+        return par[x];
+    }
+    void merge(string x, string y, double value) {
+        auto a = find(x), b = find(y);
+        if (a->s == b->s) return;
+        par[b->s] = new Node(a->s, value / b->d * a->d);
+    }
+
+    vector<double> calcEquation1(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {
+        int n = equations.size();
+        for (int i = 0; i < n; i++) {
+            vector<string> e = equations[i];
+            if (!par.count(e[0])) par[e[0]] = new Node(e[0], 1.0);
+            if (!par.count(e[1])) par[e[1]] = new Node(e[1], 1.0);
+            merge(e[0], e[1], values[i]);
+        }
+        vector<double> ans;
+        for (auto q : queries) {
+            if (!par.count(q[0]) || !par.count(q[1])) {
+                ans.push_back(-1);
+                continue;
+            }
+            if (q[0] == q[1]) {
+                ans.push_back(1.0);
+                continue;
+            }
+            Node *a = find(q[0]), *b = find(q[1]);
+            if (a->s == b->s) {
+                ans.push_back(b->d / a->d);
+            } else {
+                ans.push_back(-1);
+            }
+        }
+        return ans;
+    }
+
+    unordered_map<string, unordered_map<string, double>> adjs;
+    unordered_map<string, bool> vis;
+
+    bool dfs(string s, string target, double d, double& ans) {
+        // cout<<s<<" "<<target<<" "<<d<<" "<<endl;
+        if (s == target) {
+            ans = d;
+            return true;
+        }
+        vis[s] = true;
+        for (auto [k, v] : adjs[s]) {
+            if (vis[k]) continue;
+            if (dfs(k, target, d * v, ans)) return true;
+        }
+        return false;
+    }
+
+    // dfs
+    vector<double> calcEquation2(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {
+        int n = equations.size();
+        for (int i = 0; i < n; i++) {
+            auto e = equations[i];
+            auto d = values[i];
+            adjs[e[0]][e[1]] = d;
+            adjs[e[1]][e[0]] = 1 / d;
+        }
+        vector<double> ans;
+        for (auto q : queries) {
+            if (!adjs.count(q[0]) || !adjs.count(q[1])) {
+                ans.push_back(-1);
+                continue;
+            }
+            if (q[0] == q[1]) {
+                ans.push_back(1.0);
+                continue;
+            }
+            vis.clear();
+            double d = -1;
+            dfs(q[0], q[1], 1.0, d);
+            ans.push_back(d);
+        }
+        return ans;
+    }
+
+    // bfs
+    vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {
+        int n = equations.size();
+        for (int i = 0; i < n; i++) {
+            auto e = equations[i];
+            auto d = values[i];
+            adjs[e[0]][e[1]] = d;
+            adjs[e[1]][e[0]] = 1 / d;
+        }
+        vector<double> ans;
+        for (auto q : queries) {
+            if (!adjs.count(q[0]) || !adjs.count(q[1])) {
+                ans.push_back(-1);
+                continue;
+            }
+            vis.clear();
+            queue<pair<string, double>> qe;
+            qe.push({q[0], 1.0});
+            double d = -1;
+            while (!qe.empty()) {
+                auto t = qe.front(); qe.pop();
+                if (t.first == q[1]) {
+                    d = t.second;
+                    break;
+                }
+                vis[t.first] = true;
+                for (auto [k, v] : adjs[t.first]) {
+                    if (vis[k]) continue;
+                    qe.push({k, v * t.second});
+                }
+            }
+            ans.push_back(d);
+        }
+        return ans;
+    }
+};
+
