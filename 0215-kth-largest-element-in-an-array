@@ -1,3 +1,42 @@
+struct heap {
+    vector<int> c;
+    void push(int x) {
+        c.push_back(x);
+        int i = c.size() - 1;
+        while (i > 0) {
+            int par = (i - 1) / 2;
+            if (c[par] > c[i]) swap(c[par], c[i]);
+            i = par;
+        }
+    }
+
+    void pop() {
+        if (c.size() == 0) return;
+        int maxx = c.size() - 1;
+        swap(c[0], c[maxx]);
+        int i = 0;
+        while (true) {
+            int maxp = i;
+            int lc = 2 * i + 1, rc = 2 * i + 2;
+            if (lc < maxx && c[lc] < c[i]) maxp = lc;
+            if (rc < maxx && c[rc] < c[maxp]) maxp = rc;
+            if (maxp == i) break;
+            swap(c[maxp], c[i]);
+            i = maxp;
+        }
+        c.pop_back();
+    }
+
+    int size() {
+        return c.size();
+    }
+
+    int top() {
+        if (c.size() == 0) return -1;
+        return c[0];
+    }
+};
+
 class Solution {
 public:
     int partiton(vector<int>& nums, int start, int end) {
