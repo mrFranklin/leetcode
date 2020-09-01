@@ -1,0 +1,44 @@
+class Solution {
+public:
+
+    vector<vector<int>> mem;
+    int dfs(vector<int>& nums, int st, int ed) {
+        if (st > ed) return 0;
+        if (st == ed) return nums[st];
+        if (mem[st][ed] > 0) return mem[st][ed];
+        int n = dfs(nums, st + 1, ed - 1);
+        int n1 = nums[st] + min(n, dfs(nums, st + 2, ed));
+        int n2 = nums[ed] + min(n, dfs(nums, st, ed - 2));
+        mem[st][ed] = max(n1, n2);
+        return mem[st][ed];
+    }
+
+    // 记忆化
+    bool PredictTheWinner1(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 1) return true;
+        mem = vector<vector<int>>(n, vector<int>(n, 0));
+        int sum = 0;
+        for (int i = 0; i < n; i++) sum += nums[i];
+        int n1 = dfs(nums, 0, n - 1);
+        return n1 >= sum - n1;
+    }
+
+    // dp
+    bool PredictTheWinner(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 1) return true;
+
+        vector<vector<int>> f(n, vector<int>(n)), g(n, vector<int>(n));
+        for (int i = 0; i < n; i++) f[i][i] = nums[i], g[i][i] = 0;
+        for (int len = 2; len <= n; len++) {
+            for (int i = 0; i + len - 1 < n; i++) {
+                int j = i + len - 1;
+                f[i][j] = max(nums[i] + g[i + 1][j], nums[j] + g[i][j - 1]);
+                g[i][j] = min(f[i + 1][j], f[i][j - 1]);
+            }
+        }
+
+        return nums[0] + g[1][n - 1] >= f[1][n - 1] || nums[n - 1] + g[0][n - 2] >= f[0][n - 2];
+    }
+};
