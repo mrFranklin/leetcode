@@ -119,32 +119,6 @@ public:
 
     bool isBalanced(TreeNode* root) {
         bool res = true;
-        BST b;
-        vector<int> v = {9, 3, 20, 15, 7};
-        for (auto i : v) b.insert(i);
-        auto vv = b.travel();
-        for (auto i : vv) cout<<i<<"  ";
-        cout<<endl;
-        b.remove(9);
-        vv = b.travel();
-        for (auto i : vv) cout<<i<<"  ";
-        cout<<endl;
-        b.remove(3);
-        vv = b.travel();
-        for (auto i : vv) cout<<i<<"  ";
-        cout<<endl;
-        b.remove(15);
-        vv = b.travel();
-        for (auto i : vv) cout<<i<<"  ";
-        cout<<endl;
-        b.remove(7);
-        vv = b.travel();
-        for (auto i : vv) cout<<i<<"  ";
-        cout<<endl;
-        b.remove(20);
-        vv = b.travel();
-        for (auto i : vv) cout<<i<<"  ";
-        
         dfs(root, res);
         return res;
     }
