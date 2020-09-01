@@ -1,0 +1,151 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+struct BST {
+    TreeNode *root = NULL;
+    
+    bool find(int x) {
+        TreeNode *p = root;
+        while (p) {
+            if (p->val == x) return true;
+            else if (p->val > x) p = p->left;
+            else p = p->right;
+        }
+        return -1;
+    }
+
+    bool insert(int x) {
+        if (root == NULL) {
+            root = new TreeNode(x);
+            return true;
+        }
+        TreeNode *p = root;
+        while (p) {
+            if (p->val == x) return false;
+            else if (p->val > x) {
+                if (p->left == NULL) {
+                    p->left = new TreeNode(x);
+                    return true;
+                }
+                p = p->left;
+            } else {
+                if (p->right == NULL) {
+                    p->right = new TreeNode(x);
+                    return true;
+                }
+                p = p->right;
+            }
+        }
+        return true;
+    }
+
+    void remove(int x) {
+        cout<<"remove: "<<x<<endl;
+        if (root == NULL) return;
+        TreeNode *p = root, *pre = NULL;
+        while (p) {
+            if (p->val == x) {
+                TreeNode *q = p->right, *pq = p;
+                if (q != NULL) {
+                    while (q->left) {
+                        pq = q;
+                        q = q->left;
+                    }
+                    if (pq != p) {
+                        pq->left = q->right;
+                        q->left = p->left, q->right = p->right;
+                    } else {
+                        q->left = p->left;
+                    }
+                } else {
+                    q = p->left, pq = p;
+                    while (q != NULL && q->right) {
+                        pq = q;
+                        q = q->right;
+                    }
+                    if (pq != p) {
+                        pq->right = q->left;
+                        q->left = p->left, q->right = p->right;
+                    } else if (q != NULL) {
+                        q->right = p->right;
+                    }
+                }
+                if (pre == NULL) root = q;
+                else if (pre->left == p) pre->left = q;
+                else pre->right = q;
+                return;
+            }
+            else if (p->val > x) {
+                pre = p;
+                p = p->left;
+            }
+            else {
+                pre = p;
+                p = p->right;
+            }
+        }
+        return;
+    }
+
+    vector<int> travel() {
+        vector<int> ans;
+        inorder(root, ans);
+        return ans;
+    }
+    void inorder(TreeNode *root, vector<int>& ans) {
+        if (root == NULL) return;
+        inorder(root->left, ans);
+        ans.push_back(root->val);
+        inorder(root->right, ans);
+    }
+};
+
+class Solution {
+public:
+    int dfs(TreeNode* root, bool& res) {
+        if (root == NULL) return 0;
+        int l = dfs(root->left, res);
+        int r = dfs(root->right, res);
+        if (abs(l - r) > 1) res = false;
+        return 1 + max(l, r);
+    }
+
+    bool isBalanced(TreeNode* root) {
+        bool res = true;
+        BST b;
+        vector<int> v = {9, 3, 20, 15, 7};
+        for (auto i : v) b.insert(i);
+        auto vv = b.travel();
+        for (auto i : vv) cout<<i<<"  ";
+        cout<<endl;
+        b.remove(9);
+        vv = b.travel();
+        for (auto i : vv) cout<<i<<"  ";
+        cout<<endl;
+        b.remove(3);
+        vv = b.travel();
+        for (auto i : vv) cout<<i<<"  ";
+        cout<<endl;
+        b.remove(15);
+        vv = b.travel();
+        for (auto i : vv) cout<<i<<"  ";
+        cout<<endl;
+        b.remove(7);
+        vv = b.travel();
+        for (auto i : vv) cout<<i<<"  ";
+        cout<<endl;
+        b.remove(20);
+        vv = b.travel();
+        for (auto i : vv) cout<<i<<"  ";
+        
+        dfs(root, res);
+        return res;
+    }
+};
