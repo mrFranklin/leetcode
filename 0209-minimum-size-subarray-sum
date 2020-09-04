@@ -1,0 +1,48 @@
+class Solution {
+public:
+    // O(n)
+    int minSubArrayLen1(int s, vector<int>& nums) {
+        int n = nums.size();
+        int l = 0, r = 0;
+        int sum = 0, ans = INT_MAX;
+        while (r < n) {
+            sum += nums[r];
+            while (sum >= s && l >= 0) {
+                sum -= nums[l];
+                ans = min(ans, r - l + 1);
+                l++;
+            }
+            r++;
+        }
+        return ans == INT_MAX ? 0 : ans;
+    }
+
+    // O(n * lgN)
+    int minSubArrayLen(int s, vector<int>& nums) {
+        int n = nums.size();
+        vector<int> pre(n + 1);
+        for (int i = 0; i < n; i++) {
+            pre[i + 1] = pre[i] + nums[i];
+        }
+        int l = 1, r = n;
+        while (l < r) {
+            cout<<l<<" "<<r<<endl;
+            int mid = (l + r) / 2;
+            bool fnd = false;
+            for (int i = 0; i + mid <= n; i++) {
+                if (pre[i + mid] - pre[i] >= s) {
+                    fnd = true;
+                    break;
+                }
+            }
+            if (fnd) r = mid;
+            else l = mid + 1;
+        }
+        for (int i = 0; i + l <= n; i++) {
+            if (pre[i + l] - pre[i] >= s) {
+                return l;
+            }
+        }
+        return 0;
+    }
+};
