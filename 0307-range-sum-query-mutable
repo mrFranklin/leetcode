@@ -1,0 +1,44 @@
+class NumArray {
+public:
+    vector<int> sum, _nums;
+    void add(int i, int val) {
+        while (i < sum.size()) {
+            sum[i] += val;
+            i += i & (-i);
+        }    
+    }
+
+    int query(int i) {
+        int ans = 0;
+        while (i > 0) {
+            ans += sum[i];
+            i -= i & (-i);
+        }
+        return ans;
+    }
+
+    NumArray(vector<int>& nums) {
+        int n = nums.size();
+        sum = vector<int>(n + 1, 0);
+        _nums = vector<int>(n + 1, 0);
+        for (int i = 0; i < n; i++) {
+            update(i, nums[i]);
+        }
+    }
+    
+    void update(int i, int val) {
+        add(i + 1, val - _nums[i]);
+        _nums[i] = val;
+    }
+    
+    int sumRange(int i, int j) {
+        return query(j + 1) - query(i);
+    }
+};
+
+/**
+ * Your NumArray object will be instantiated and called as such:
+ * NumArray* obj = new NumArray(nums);
+ * obj->update(i,val);
+ * int param_2 = obj->sumRange(i,j);
+ */
