@@ -1,0 +1,105 @@
+struct Node {
+    vector<Node*> next;
+    string word;
+    Node:next() {
+        word = "";
+        memset(next, 0, sizeof(Node*) * 26);
+    }
+};
+
+class Trie {
+public:
+    Node* root;
+    
+    /** Initialize your data structure here. */
+    Trie() {
+        root = new Node();
+    }
+    
+    /** Inserts a word into the trie. */
+    void insert(string word) {
+        int n = word.size();
+        Node *p = root;
+        for (int i = 0; i < n; i++) {
+            int c = word[i] - 'a';
+            if (p->next[c] == NULL) p->next[c] = new Node();
+            p = p->next[c];
+        }
+        p->isLast = true;
+    }
+    
+    /** Returns if the word is in the trie. */
+    bool search(string word) {
+        if (word.size() == 0) return true;
+        Node *p = root;
+        for (char ch : word) {
+            int c = ch - 'a';
+            if (p->next[c] == NULL) return false;
+            p = p->next[c];
+        }
+        return p->isLast;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    Node* startsWith(string prefix) {
+        Node *p = root;
+        for (char ch : prefix) {
+            int c = ch - 'a';
+            if (p->next[c] == NULL) return NULL;
+            p = p->next[c];
+        }
+        return p;
+    }
+};
+
+class Solution {
+public:
+    int n, m;
+    Trie *tr;
+    vector<vector<bool>> vis;
+
+    int d[5] = {-1, 0, 1, 0, -1};
+    void dfs(vector<vector<char>>& board, int x, int y, string& mem, vector<string>& ans) {
+        Node * node = tr->startsWith(mem);
+        if (node == NULL) {
+            return;
+        } else if (node->isLast) {
+            ans.push_back(mem);
+            node->isLast = false;
+        } 
+        for (int i = 0; i < 4; i++) {
+            int a = x + d[i], b = y + d[i + 1];
+            if (a < 0 || a >= n || b < 0 || b >= m || vis[a][b]) continue;
+            vis[a][b] = true;
+            mem.push_back(board[a][b]);
+            dfs(board, a, b, mem, ans);
+            mem.pop_back();
+            vis[a][b] = false;
+        }
+    }
+
+    vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
+        n = board.size(); 
+        if (n == 0) return {};
+        m = board[0].size(); 
+        if (m == 0) return {};
+        
+        vis = vector<vector<bool>>(n, vector<bool>(m));
+        tr = new Trie();
+        for (auto s : words) {
+            tr->insert(s);
+        }
+        string mem;
+        vector<string> ans;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                vis[i][j] = true;
+                mem.push_back(board[i][j]);
+                dfs(board, i, j, mem, ans);
+                mem.pop_back();
+                vis[i][j] = false;
+            }
+        }
+        return ans;
+    }
+};
