@@ -1,0 +1,84 @@
+class Solution {
+public:
+    vector<long> bit;
+    vector<long> m;
+
+    void update(int x, int val) {
+        for (int i = x; i < bit.size(); i += i & (-i)) {
+            bit[i] += val;
+        }
+    }
+
+    int query(int x) {
+        int sum = 0;
+        for (int i = x; i > 0; i -= i & (-i)) {
+            sum += bit[i];
+        }
+        return sum;
+    }
+
+    int idx(long val) {
+        return lower_bound(m.begin(), m.end(), val) - m.begin() + 1;
+    }
+
+    // bit 树状数组
+    int reversePairs1(vector<int>& nums) {
+        int n = nums.size();
+        for (auto i : nums) {
+            m.push_back(i);
+            m.push_back(i * 2l);
+        }
+        sort(m.begin(), m.end());
+        bit.assign(m.size() + 1, 0);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int j = idx(2l * nums[i]);
+            ans += i - query(j);
+            update(idx(nums[i]), 1);
+        }
+        return ans;
+    }
+
+    int dac(vector<int>& nums, vector<int>& v, int l, int r) {
+        if (l == r) return 0;
+        int mid = l + (r - l) / 2;
+        int a1 = dac(nums, v, l, mid);
+        int a2 = dac(nums, v, mid + 1, r);
+        int i1 = l, i2 = mid + 1, cur = l, cnt = 0;
+        int j = mid + 1;
+        for (int i = l; i <= mid; i++) {
+            while (j <= r && nums[i] > nums[j] * 2l) {
+                j++;
+            }
+            cnt += j - (mid + 1);
+        }
+        while (i1 <= mid && i2 <= r) {
+            if (nums[i1] > nums[i2]) {
+                v[cur++] = nums[i2++];
+            } else {
+                v[cur++] = nums[i1++];
+            }
+        }
+        if (i1 <= mid) {
+            for (int k = i1; k <= mid; k++) {
+                v[cur++] = nums[k];
+            }
+        } else if (i2 <= r) {
+            for (int k = i2; k <= r; k++) {
+                v[cur++] = nums[k];
+            }
+        }
+        for (int k = l; k <= r; k++) {
+            nums[k] = v[k];
+        }
+        return a1 + a2 + cnt;
+    }
+
+    // cdq分治
+    int reversePairs(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 0) return 0;
+        vector<int> v(n);
+        return dac(nums, v, 0, n - 1);
+    }
+};
