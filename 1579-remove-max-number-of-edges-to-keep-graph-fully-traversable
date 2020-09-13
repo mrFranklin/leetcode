@@ -1,0 +1,52 @@
+class Solution {
+public:
+
+    int find(vector<int>& par, int x) {
+        return x == par[x] ? x : par[x] = find(par, par[x]);
+    }
+
+    vector<int> pa, pb;
+    
+    // 最小生成树
+    int maxNumEdgesToRemove(int n, vector<vector<int>>& es) {
+        pa.resize(n + 1), pb.resize(n + 1);
+        for (int i = 1; i <= n; i++) pa[i] = pb[i] = i;
+        int ans = 0, cnta = n, cntb = n;
+        for (auto& e :es) {
+            if (e[0] == 3) {
+                int a = find(pa, e[1]), b = find(pa, e[2]);
+                // int c = find(pb, e[1]), d = find(pb, e[2]);
+                if (a == b) {
+                    ans++; // remove
+                } else {
+                    pa[a] = b;
+                    // pb[c] = d;
+                    pb[a] = b;
+                    cnta--, cntb--;
+                }
+            }
+        }
+        for (auto& e :es) {
+            if (e[0] == 1) {
+                int a = find(pa, e[1]), b = find(pa, e[2]);
+                if (a == b) {
+                    ans++; // remove
+                } else {
+                    pa[a] = b;
+                    cnta--;
+                }
+            }
+            if (e[0] == 2) {
+                int a = find(pb, e[1]), b = find(pb, e[2]);
+                if (a == b) {
+                    ans++; // remove
+                } else {
+                    pb[a] = b;
+                    cntb--;
+                }
+            }
+        }
+        if (cnta > 1 || cntb > 1) return -1;
+        return ans;
+    }
+};
