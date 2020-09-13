@@ -1,0 +1,58 @@
+class Solution {
+public:
+    int INF = 1e8;
+    // prim
+    int minCostConnectPoints1(vector<vector<int>>& points) {
+        int n = points.size(), m = points[0].size();
+        vector<int> dist(n, INF);
+        vector<bool> vis(n);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int t = -1, minn = INF;
+            for (int j = 0; j < n; j++) {
+                if (!vis[j] && (t == -1 || dist[t] > dist[j])) {
+                    t = j;
+                    minn = dist[j];
+                }
+            }
+            if (i > 0 && dist[t] == INF) return -1;
+            if (i > 0) ans += dist[t];
+            vis[t] = true;
+            for (int j = 0; j < n; j++) {
+                dist[j] = min(dist[j], abs(points[j][0] - points[t][0]) + abs(points[j][1] - points[t][1]));
+            }
+        }
+        return ans;
+    }
+
+    int find(vector<int>& par, int x) {
+        return x == par[x] ? x : par[x] = find(par, par[x]);
+    }
+
+    // kruskal
+    int minCostConnectPoints(vector<vector<int>>& points) {
+        int n = points.size();
+        // vector<vector<int>> edges 会超时！
+        vector<pair<int, pair<int, int>>> edges;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                edges.push_back({abs(points[i][0] - points[j][0]) + abs(points[i][1] - points[j][1]), {i, j}});
+            }
+        }
+        sort(edges.begin(), edges.end());
+
+        vector<int> par(n);
+        for (int i = 0; i < n; i++) par[i] = i;
+
+        int ans = 0, cnt = 0;
+        for (int i = 0; i < edges.size(); i++) {
+            int a = find(par, edges[i].second.first), b = find(par, edges[i].second.second);
+            if (a == b) continue;
+            par[a] = b;
+            ans += edges[i].first;
+            if (++cnt >= n - 1) break;
+        }
+
+        return ans;
+    }
+};
